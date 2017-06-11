@@ -4,9 +4,9 @@ This chapter describes how the installation of EDGE and its dependencies.
 ## Examples
 EDGE's entire installation process is continuously tested.
 If you get stuck with this user guide, you might be able to find additional installation hints in the respective configurations:
- * [Travis CI]({{book.edge_git}}/blob/master/.travis.yml)
- * [GoCD]({{book.edge_git}}/blob/master/tools/gocd/cruise-config.tmpl)
- * [Singularity]({{book.edge_git}}/blob/master/tools/singularity/debian.def)
+* [Travis CI]({{book.edge_git}}/blob/master/.travis.yml)
+* [GoCD]({{book.edge_git}}/blob/master/tools/gocd/cruise-config.tmpl)
+* [Singularity]({{book.edge_git}}/blob/master/tools/singularity/debian.def)
 
 ## General Remarks
 EDGE links almost all libraries statically and expects corresponding library installations.
@@ -30,21 +30,21 @@ Changes in `develop` are intended to be merged into master.
 However, `develop` is for ongoing development and broken from time to time.
 
 The procedure for obtaining the code as follows:
-* Clone the git-repository and navigate to the root-directory through:
+1. Clone the git-repository and navigate to the root-directory through:
 ```
 git clone https://github.com/3343/edge.git
 cd edge
 ```
 This gives you the `master`-branch.
 If this is what you want, jump over the next step.
-* Checkout the desired tag:
+2. Checkout the desired tag:
 ```
 git checkout YY.MM.VV
 ```
 _Remark:_ `YY.MM.VV` is a place holder.
 You have to replace this with your actual tag.
 Available tags are shown at the GitHub-homepage or directly through `git tag`.
-* Initialize and update the submodules:
+3. Initialize and update the submodules:
 ```
 git submodule init
 git submodule update
@@ -124,7 +124,6 @@ cd netcdf; HDF5DIR=$(pwd)/../libs CPPFLAGS=-I${HDF5DIR}/include LDFLAGS=-L${HDF5
 ```
 cd netcdf; CC=mpicc HDF5DIR=$(pwd)/../libs CPPFLAGS=-I${HDF5DIR}/include LDFLAGS=-L${HDF5DIR}/lib ./configure --enable-shared=no --disable-dap --prefix=$(pwd)/../libs
 ```
-
 Check that the configuration, printed at the very end matches your expectations.
 
 4. Finally run `make` to build the library and `make install` to put NetCDF in the `libs` directory.
@@ -217,22 +216,22 @@ EDGE provides a Debian-bootstrap for automated installation of different configu
 Once a container is generated, you can run it on systems with Singularity installed, without installing any further dependencies.
 Example systems with Singularity support are the XSEDE-resources [Stampede](https://github.com/TACC/TACC-Singularity) and [Comet](https://github.com/zonca/singularity-comet).
 If you have root-access to a system with Singularity and [debootstrap](https://wiki.debian.org/Debootstrap) installed, you can generate a container containing EDGE and all its dependencies.
-* Clone a clean copy of EDGE, including all submodules.
-* Generate an archive of EDGE's root-directory:
+1. Clone a clean copy of EDGE, including all submodules.
+2. Generate an archive of EDGE's root-directory:
 ```
 tar -czf /tmp/edge.tar.gz edge
 ```
-* Create a Singularity container image of with a maximum size of 8 GiB (8192 MiB):
+3. Create a Singularity container image of with a maximum size of 8 GiB (8192 MiB):
 ```
 sudo singularity create -s 8192 /tmp/edge.img
 ```
-* Import EDGE's source code:
+4. Import EDGE's source code:
 ```
 sudo singularity import /tmp/edge.img /tmp/edge.tar.gz
 ```
 You can ignore the warning `ERROR: Container does not contain the valid minimum requirement of /bin/sh`, we haven't installed anything by now, so this is fine.
-* Run the bootstrap to install the dependencies and EDGE-configurations:
+5. Run the bootstrap to install the dependencies and EDGE-configurations:
 ```
 sudo singularity bootstrap /tmp/edge.img ./debian.def
 ```
-* The bootstrap might run for several hours, maybe grab a coffee.
+6. The bootstrap might run for several hours, maybe grab a coffee.
