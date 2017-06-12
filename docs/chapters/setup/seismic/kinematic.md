@@ -21,6 +21,6 @@ If only one set of slip parameters per point source is given, non-fused sources 
 In general, we recommend to use both, fused kinematic sources and fused runs, for higher performance.
 
 ## Standard Rupture Format
-EDGE implements the ["Standard Rupture Format"](https://scec.usc.edu/scecpedia/Standard_Rupture_Format) (SRF) for kinmatic sources.
+EDGE implements the ["Standard Rupture Format"](http://scec.usc.edu/scecpedia/Standard_Rupture_Format) (SRF) for kinmatic sources.
 Here, we use an [intermediate format](https://github.com/SeisSol/SeisSol/wiki/Standard-Rupture-Format), which converts converting the ASCII-SRF to an intermediate binary netCDF-format.
 You can use the tool [rconv](https://github.com/SeisSol/SeisSol/tree/master/preprocessing/science/rconv) for the conversion from SRF to netCDF.
