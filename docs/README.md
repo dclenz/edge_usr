@@ -38,7 +38,7 @@ For the master branch the directory is located [here]({{book.edge_git}}/tree/mas
 EDGE's automated FOSSA-reports might be helpful for further details on the licenses:
 
 <a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2F3343%2Fedge?ref=badge_large" alt="FOSSA Status">
-<img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2F3343%2Fedge.svg?type=large" width=300/></a>
+<img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2F3343%2Fedge.svg?type=large" alt="FOSSA Status" width=300/></a>
 
 The sources of this user guide, and the sources of EDGE's [developer guide]({{book.edge_dev_git}}) are CC0'd.
 An [FAQ](https://wiki.creativecommons.org/wiki/CC0_FAQ) on CC0 is provided by [Creative Commons](https://creativecommons.org/).

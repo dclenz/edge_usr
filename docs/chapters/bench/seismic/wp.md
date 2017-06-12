@@ -26,7 +26,7 @@ The Layer Over Halfspace benchmark (LOH.2) is a purely elastic setup, consisting
 Free-surface boundary conditions at the top of the layer are used, and outflow boundaries everywhere else.
 Source is a right-lateral strike-slip finite fault with a constant rupture velocity of $$3000\frac{\text{m}}{\text{s}}$$.
 The source-time function is similar everywhere, since only the onset time is variable.
-A detailed description of the LOH.2 problem is given in the [Final Report to Pacific Earthquake Engineering Research Center, Lifelines Program Task 1A01, Tests of 3D Elastodynamic Codes](http://www-rohan.sdsu.edu/~steveday/BASINS/Final_Report_1A01.pdf).
+A detailed description of the LOH.2 problem is given in the "Final Report to Pacific Earthquake Engineering Research Center, Lifelines Program Task 1A01, Tests of 3D Elastodynamic Codes".
 
 EDGE provides two setups solving the LOH.2 problem.
 This allows us to check consistency of the results, when using different features of the code.
