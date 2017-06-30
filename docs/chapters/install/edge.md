@@ -21,7 +21,7 @@ Make sure to navigate back to the root-directory before installing the next libr
 EDGE's sources are hosted at {{book.edge_git}}.
 The repository has two branches `master` and `develop`.
 `master` is the most recent stable version of EDGE.
-The minmimum acceptance requirement for `master` is passing EDGE's [continuous delivery pipeline]({{book.edge_dev_pub}}/cont/chapters/cont/cont.html).
+The minmimum acceptance requirement for `master` is passing EDGE's [continuous delivery pipeline]({{book.edge_dev_pub}}/chapters/cont/cont.html).
 Periodically EDGE also provides tags, which are simply snapshots of the master branch.
 Typically tags passed additional, manual testing.
 We recommend to use the most recent tag to get started with EDGE.
@@ -109,7 +109,7 @@ The library can also be used in the installation of MOAB (unstructured mesh inte
 wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.4.1.1.tar.gz -O netcdf.tar.gz
 ```
 
-2. Extract NetCDF to the directory `netcdf`
+2. Extract NetCDF to the directory `netcdf`:
 ```
 mkdir netcdf; tar -xzf netcdf.tar.gz -C netcdf --strip-components=1
 ```
