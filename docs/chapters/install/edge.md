@@ -227,9 +227,8 @@ sudo singularity create -s 8192 /tmp/edge.img
 ```
 4. Import EDGE's source code:
 ```
-sudo singularity import /tmp/edge.img /tmp/edge.tar.gz
+gunzip -c /tmp/edge.tar.gz | sudo singularity import /tmp/edge.img
 ```
-You can ignore the warning `ERROR: Container does not contain the valid minimum requirement of /bin/sh`, we haven't installed anything by now, so this is fine.
 5. Run the bootstrap to install the dependencies and EDGE-configurations:
 ```
 sudo singularity bootstrap /tmp/edge.img ./debian.def
