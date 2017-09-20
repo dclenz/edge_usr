@@ -58,7 +58,7 @@ Since EDGE uses different kernels for the seismic wave propagation component in 
 ### Can4
 The Can4 benchmark is purely elastic and consists of a simple basin model with three layers, embedded in a half-space.
 A detailed description of the benchmark is given in SISMOWINE's [description](http://www.sismowine.org/model/E2VP_Can4.pdf).
-Discussions of benchmark results are presented in [Earthquake Ground Motion in the Mygdonian Basin, Greece: The E2VP Verification and Validation of 3D Numerical Simulation up to 4 Hz - E. Maufroy et al.](http://www.bssaonline.org/content/105/3/1398.full) and "19 - Modelling of earthquake motion: Mygdonian basin" of the book [The Finite-Difference Modelling of Earthquake Motions - P. Moczo, J. Kristek, M. Gális](https://doi.org/10.1017/CBO9781139236911.002).
+Discussions of benchmark results are presented in [Earthquake Ground Motion in the Mygdonian Basin, Greece: The E2VP Verification and Validation of 3D Numerical Simulation up to 4 Hz - E. Maufroy et al.](http://bssa.geoscienceworld.org/content/105/3/1398) and "19 - Modelling of earthquake motion: Mygdonian basin" of the book [The Finite-Difference Modelling of Earthquake Motions - P. Moczo, J. Kristek, M. Gális](https://doi.org/10.1017/CBO9781139236911.002).
 
 The layers of the benchmark are shallow and reach the surface at a low dipping angle (wedge).
 This poses a modeling challenge to numerical software.
