@@ -17,6 +17,21 @@ This is one of the reasons why manual library installations are recommended, for
 All of the instructions below assume that you initiate the installation of each library in EDGE's root-directory and will put the installed library into the directory `libs`.
 Make sure to navigate back to the root-directory before installing the next library.
 
+All current Xeon Phi supercomputers (Knights Landing) have Xeon login nodes (typically Haswell), used for compilation.
+Many configure-scripts check if compiled binaries are working.
+Thus, checks, compiled for the Xeon Phi instruction set (AVX512), tend to fail on Haswell (AVX2).
+Knights Landing supports all previous instructions sets (incl. AVX2):
+We recommend compiling all libraries, except EDGE itself, using the Xeon's instruction set.
+For example on the Cray machine Cori:
+1. Compile all libraries for Haswell by loading the Haswell module (default) through:
+```
+module load craype-haswell
+```
+2. Compile EDGE itself using the Knights Landing module:
+```
+module switch craype-haswell craype-mic-knl
+```
+
 ## Getting the Code
 EDGE's sources are hosted at {{book.edge_git}}.
 The repository has two branches `master` and `develop`.
