@@ -128,6 +128,32 @@ Check that the configuration, printed at the very end matches your expectations.
 
 4. Finally run `make` to build the library and `make install` to put NetCDF in the `libs` directory.
 
+## BLAS and LAPACK
+BLAS and LAPACK are requirements for MOAB, starting at version 5.0.
+It is likely that you already have an installation, which means that you might be able to skip this step.
+If not, we'll go over the installation of the [Linear Algebra PACKage](http://www.netlib.org/lapack/), which includes BLAS.
+
+1. Download the sources from https://github.com/Reference-LAPACK/lapack-release:
+```
+wget https://github.com/Reference-LAPACK/lapack-release/archive/lapack-3.8.0.zip -O lapack.zip
+```
+
+2. Extract LAPACK to the directory `lapack`:
+```
+unzip -a lapack.zip
+mv lapack-release-lapack-3.8.0 lapack
+```
+
+3. Build the library through [cmake](https://cmake.org/) and install it to `libs`:
+```
+mkdir lapack/build; cd lapack/build; cmake -DCMAKE_INSTALL_PREFIX:PATH=$(pwd)/../../libs ..; make install
+```
+
+4. Link to libraries in `lib`-directory, if installed to `lib64`. `lib` is what we use for the MOAB installation:
+```
+ln -s $(pwd)/../../libs/lib64/lib*.a $(pwd)/../../libs/
+```
+
 ## MOAB
 If running on unstructured meshes, you need to provide an installation of [MOAB](http://sigma.mcs.anl.gov/moab-library/).
 Since ASCII-only builds of MOAB are troublesome, building with HDF5-support also for small-scale runs is recommended.
@@ -138,19 +164,19 @@ cd submodules/moab; autoreconf -fi
 ```
 
 2. Configure the installation, three examples:
-  * Sequential example using GNU compilers:
+  * Sequential example using GNU compilers and OpenBlas:
 ```
-F77=gfortran F90=gfortran FC=gfortran CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --enable-all-static --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+LIBS="-lgfortran -lquadmath -lm" F77=gfortran F90=gfortran FC=gfortran CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
   * MPI-parallel example using Intel compilers:
 ```
-F77=mpiifort F90=mpiifort FC=mpiifort CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --enable-tools --enable-all-static --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+F77=mpiifort F90=mpiifort FC=mpiifort CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
   * MPI-parallel example using Intel compilers and Intel MPI:
 ```
-F77=mpiifort F90=mpiifort CC=mpiicc CXX=mpiicpc RUNPARALLEL="mpiexec.hydra -n 4" ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --disable-mbcslam --enable-all-static --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+F77=mpiifort F90=mpiifort CC=mpiicc CXX=mpiicpc RUNPARALLEL="mpiexec.hydra -n 4" ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
 3. Now you can build MOAB with `make` and install it through `make install`.
