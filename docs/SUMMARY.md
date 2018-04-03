@@ -8,5 +8,7 @@
   * [Meshes](chapters/setup/meshes.md)
   * [Resource Requirements](chapters/setup/seismic/resources.md)
   * [Kinematic Sources](chapters/setup/seismic/kinematic.md)
+* Tools
+  * [EDGE-V](chapters/tools/edge_v.md)
 * Benchmarks
   * [Wave Propagation](chapters/bench/seismic/wp.md)
