@@ -70,8 +70,21 @@ Here `config_file.log` is the path to the annotation configuration file. There i
 
 ```bash
 # initialization params for UCVMC
-ucvm_config=./conf/ucvm.conf
-ucvm_model_list=cvmsi
+ucvm_config=./example/ucvm.conf
+ucvm_model_list=cvmh
+ucvm_cmode=UCVM_COORD_GEO_ELEV
+ucvm_type=2
+
+# other params
+min_vp=1500.0
+min_vs=500.0
+min_vs2=1200.0
+max_vp_vs_ratio=3.0
+
+elmts_per_wave=20.0
+
+proj_mesh=+proj=tmerc +units=m +axis=enu +no_defs +datum=WGS84 +k=0.9996 +lon_0=-117.916 +lat_0=33.933
+proj_vel=+proj=latlong +datum=WGS84
 
 # input mesh file path
 mesh_file=./meshes/ucvm_mini.msh
@@ -92,6 +105,14 @@ All the settings are required.
     (correspondent to the argument of `-m` option in `ucvm_query`)
 
 **Note**: For details in the UCVMC initial parameters, please refer to [UCVMC wiki](https://github.com/SCECcode/UCVMC/wiki).
+
+* `min_vp`, `min_vs`, `min_vs2`, `max_vp_vs_ratio`:
+    Parameters used for adjustment of the velocity model in the upper layers (see [High-F](https://scec.usc.edu/scecpedia/HighF_2018)).
+
+* `proj_mesh`
+    Projection, used for deriving the Cartesian coordinates of the mesh.
+* `proj_vel`
+    Projection, used for querying the velocity model.
 
 * `mesh_file` :
     The input mesh file in Gmsh’s native “MSH” ASCII file format.
