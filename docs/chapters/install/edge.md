@@ -174,9 +174,9 @@ LIBS="-lgfortran -lquadmath -lm" F77=gfortran F90=gfortran FC=gfortran CC=gcc CX
 F77=mpiifort F90=mpiifort FC=mpiifort CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
-  * MPI-parallel example using Intel compilers and Intel MPI:
+  * MPI-parallel example using Intel compilers, Intel MPI and Intel MKL:
 ```
-F77=mpiifort F90=mpiifort CC=mpiicc CXX=mpiicpc RUNPARALLEL="mpiexec.hydra -n 4" ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+F77=mpiifort F90=mpiifort CC=mpiicc CXX=mpiicpc CFLAGS=-mkl CXXFLAGS=-mkl FCFLAGS=-mkl LDFLAGS=-mkl RUNPARALLEL="mpiexec.hydra -n 4" ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
 3. Now you can build MOAB with `make` and install it through `make install`.
