@@ -109,6 +109,8 @@ All the settings are required.
 * `min_vp`, `min_vs`, `min_vs2`, `max_vp_vs_ratio`:
     Parameters used for adjustment of the velocity model in the upper layers (see [High-F](https://scec.usc.edu/scecpedia/HighF_2018)).
 
+* `trafo_x`, `trafo_y`, `trafo_z` (optional): Transformation, applied to the mesh nodes, before querying the UCVM. The three-valued vectors are space-separated. For example, if `trafo_x=0.5 0.0 0.5`, the x-coordinate of every node in the query, would be `0.5*x + 0.5*z`.
+
 * `proj_mesh`
     Projection, used for deriving the Cartesian coordinates of the mesh.
 * `proj_vel`
