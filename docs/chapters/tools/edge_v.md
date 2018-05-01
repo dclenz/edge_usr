@@ -140,7 +140,7 @@ mkdir -p meshes
 wget https://bitbucket.org/3343/edge_opt/raw/HEAD/tools/edge_v/meshes/ucvm_mini.msh -O ./meshes/ucvm_mini.msh
 ```
 
-Change the `ucvm_config` setting in `example/annotation.conf` to the path of the reference config file in UCVMC (could be found at `${UCVMC_DIR}/conf/ucvm.conf` ), and run the following command:
+Change the `ucvm_config` setting in `example/annotation.conf` to the path of the reference config file in UCVMC (could be found at `${UCVMC_DIR}/conf/ucvm.conf`), and run the following command:
 
 ```bash
 ~bash $ ./bin/edge_v -f example/annotation.conf 
@@ -163,31 +163,37 @@ This should output the same logging info as above. The velocity model files and 
 
 <img style="float: right;" src="https://scec.usc.edu/scecwiki/images/thumb/6/62/Base_lahabra-win1.png/250px-Base_lahabra-win1.png">
 
-Here is an example of a velocity based mesh refinement process for the [La Habra simulation region](https://scec.usc.edu/scecpedia/La_Habra_Simulation_Region). A script is provided (`mesh_refinement.sh`) to perform iterative mesh refinement in order to generate a final refined mesh that is based on the velocity model ([CVM-S4.26.M01](https://github.com/SCECcode/UCVMC/wiki/Registered-CVMs)) queried from UCVM.
+Here is an example of a velocity based mesh refinement for the [La Habra simulation region](https://scec.usc.edu/scecpedia/La_Habra_Simulation_Region). A script is provided (`mesh_refinement.sh`) to perform iterative mesh refinement in order to generate a final refined mesh that is based on the UCVM model [CVM-S4.26.M01](https://github.com/SCECcode/UCVMC/wiki/Registered-CVMs).
 
-First, we need to download the geo file:
+First, change the `ucvm_config` setting inside `./example/la_habra_small.conf` to the path of the reference config file in UCVMC (could be found at `${UCVMC_DIR}/conf/ucvm.conf`).
+
+Next, we need to download the `la_habra_small.geo` file:
 ```bash
 mkdir -p meshes
 wget https://bitbucket.org/3343/edge_opt/raw/HEAD/tools/edge_v/meshes/la_habra_small.geo -O ./meshes/la_habra_small.geo
 ```
 
-Next, change the `ucvm_config` setting in `./example/la_habra_small.conf` to the path of the reference config file in UCVMC (could be found at `${UCVMC_DIR}/conf/ucvm.conf` ).
+The script (`mesh_refinement.sh`) uses this geo file to produce an initial (coarse) mesh which is used as an input to the `write_pos` program in order to generate a background velocity map (pos file) based on UCVM. The subsequent mesh generation uses this background pos file and generates a refined mesh.
 
-The script `mesh_refinement.sh` uses the `la_habra_small.geo` file to produce an initial (coarse) mesh which is used as an input to `write_pos` program in order to generate a background velocity map (pos file) based on UCVM which will be used in the next meshing iteration. The subsequent mesh generation uses this background pos file and generates a refined mesh.
+The script automatically tries to export the location of the `write_pos` program (typically `./bin/`) to the system environment variable PATH. In case of failure, the user needs to ensure `write_pos` exists and manually export its location to PATH by typing the following command in terminal:
+```bash
+export PATH="path_to_edge_v"/bin:$PATH
+```
 
 Command line arguments for `mesh_refinement.sh` are:
-| Argument |                     Result                     |
-|:--------:|:-----------------------------------------------|
-|    -m    | Model name                                     |
-|    -c    | Config directory                               |
-|    -o    | Mesh directory                                 |
-|    -p    | Handling intermediate mesh files (optional)    |
-|    -n    | Number of iterations (optional, by default 10) |
-|    -r    | Remote meshing (optional, by default 0)        |
-|    -u    | Remote username (optional)                     |
-|    -d    | Remote domain name (optional)                  |
-|    -g    | Remote location of Gmsh executable (optional)  |
-|    -t    | Remote mesh directory (optional)               |
+
+| Argument | Result                                         |
+| :--:     | --                                             |
+| `-m`     | Model name (required)                          |
+| `-c`     | Config directory (required)                    |
+| `-o`     | Mesh directory (required)                      |
+| `-p`     | Handling intermediate mesh files (optional). 1: Generate and zip intermediate files (done by default), 2: Generate but don't zip intermediate files, 3: Do not generate intermediate files (i.e. only generate refined mesh)    |
+| `-n`     | Number of iterations (optional, by default 10) |
+| `-r`     | Remote meshing (optional, by default 0)        |
+| `-u`     | Remote username (optional)                     |
+| `-d`     | Remote domain name (optional)                  |
+| `-g`     | Remote location of Gmsh executable (optional)  |
+| `-t`     | Remote mesh directory (optional)               |
 
 The bare minimum arguments required to run the script are `-m, -c, -o`, as shown below.
 ```bash
@@ -196,25 +202,29 @@ The bare minimum arguments required to run the script are `-m, -c, -o`, as shown
 The model name (`-m`) is the same name as the geo file (case-sensitive), in this case `la_habra_small`. We set the config directory (`-c`) to `./example/` as the `la_habra_small.conf` file resides there. The mesh directory (`-o`) is the directory containing the geo file and is the directory where all mesh related files (`.msh, .pos, .log, .tar.gz`) will be generated and stored (`./meshes/`). The above command also logs the script's output to a log file (`mesh_refinement.sh.log`), which can be very useful for debugging purposes.
 
 
-The next two arguments (`-p` and `-n`) are optional and independent of the rest of the arguments. The first argument (`-p`) controls how we handle intermediate mesh related files (`.msh`, `.pos` and respective `.log` files). There are 3 options available to us:
-1. Generate and zip intermediate files (done by default)
+The next two arguments (`-p` and `-n`) are optional and independent of the rest of the arguments. The first argument (`-p`) controls how we handle intermediate files (`.msh`, `.msh.log`, `.pos`, `.pos.log`). There are 3 options available to us:
+1. Generate and zip (`.tar.gz`) intermediate files (done by default; one for each intermediate iteration)
 2. Generate but don't zip intermediate files
-3. Don't generate intermediate files (i.e. only generate final refined mesh)
+3. Do not generate intermediate files (i.e. only generate refined mesh)
 
-The other argument (`-n`) specifies the number of intermediate mesh iterations to be performed in order to produce the final refined mesh (10 by default).
+The other argument (`-n`) specifies the number of intermediate mesh iterations to be performed (10 by default; 10 is the total number of iterations, i.e. 9 intermediate + 1 final)
 ```bash
 ./mesh_refinement.sh -m la_habra_small -c ./example/ -o ./meshes/ -p 3 -n 5 2>&1 | tee mesh_refinement.sh.log
 ```
 
-The rest of the arguments are controlled by the argument (`-r`) and are active only when `-r` is set to 1 (0 by default). This is a provision to utilize any high clock-speed CPU rack (that you have access) to perform the heavy-duty meshing operations and send intermediate files back and forth between the local machine and the remote client automatically. The script will fail to run if `-r` is set to 1 but any of the other arguments (`-u`, `-d`, `-g`, `-t`) is missing.
+The rest of the arguments (`-u`, `-d`, `-g`, `-t`) are controlled by the remote meshing argument (`-r`) and are active only when `-r` is set to 1 (0 by default). This is a provision to utilize any high clock-speed CPU rack (that you have access) to perform the heavy-duty meshing operations and transmit intermediate files back and forth between the local machine and the remote client automatically. The script will fail to run if `-r` is set to 1 but any of the other arguments (`-u`, `-d`, `-g`, `-t`) is missing.
 
-**IMPORTANT: Do note that this will require you to have a working SSH public key (generated using ssh-keygen) established with the remote client and Gmsh to have been installed on the remote client somewhere (we will need this location)**.
+**IMPORTANT: Do note that this will require you to have a working SSH public key ([ssh-keygen](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)) established with the remote client and [Gmsh](http://gmsh.info/) to have been installed on the remote client somewhere (we will need this location for `-g`)**.
 
-If you are using the above-mentioned remote meshing provision, you need to set your ssh username (`-u`), remote-client domain (`-d`), Gmsh executable path (`-g`) on the remote client and the mesh directory (`-t`) on the remote client which will store the intermediate files. For example, if the ssh login credentials to the remote client look like `ssh myuser@remote.client.domain`, run the following command in the terminal:
+If you are using the above-mentioned remote meshing provision, then set your ssh username (`-u`), remote-client domain (`-d`), Gmsh executable path on the remote client (`-g`) and the mesh directory on the remote client (`-t`) to store the intermediate files. For example, if the ssh login credentials to the remote client look like `ssh myuser@remote.client.domain`, run the following command in the terminal:
 ```bash
 ./mesh_refinement.sh -m la_habra_small -c ./example/ -o ./meshes/ -r 1 -u myuser -d remote.client.domain -g /home/myuser/path-to/gmsh-3.0.6-Linux64/bin/gmsh -t /home/myuser/path-to/la_habra_small/ 2>&1 | tee mesh_refinement.sh.log
 ```
 
-At the end of the iterations, a final refined mesh file is generated in `./meshes/` and this file can now be used with `edge_v` (see above sections for instructions on how to use the `edge_v` program) to generate the velocity-information annotated h5m file of the La Habra simulation region.
+At the end of the iterations, a final refined mesh file (`./meshes/la_habra_small_refined.msh`) is generated and this file can now be used with `edge_v` (see below command) to generate the velocity-information annotated h5m file of the La Habra simulation region. To do so, either rename the final refined mesh file to `./meshes/la_habra_small.msh` in order to avoid changing the config file OR change the input mesh file path inside `./example/la_habra_small.conf` to point to the final refined mesh, i.e. line 42 now reads `mesh_file=./meshes/la_habra_small_refined.msh`.
+
+```bash
+./bin.edge_v -f ./example/la_habra_small.conf
+```
 
 This process of mesh refinement can be repeated for any other model for which you have the geo file. Simply use the geo filename as model argument (`-m`) and make sure your other arguments are correct.
