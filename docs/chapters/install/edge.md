@@ -82,7 +82,7 @@ Futher, we recommend building MOAB, EDGE's interface to unstructured meshes, wit
 
 1. Download HDF5 at https://www.hdfgroup.org/downloads/hdf5/source-code/ (gzip):
 ```
-wget https://www.hdfgroup.org/package/gzip/?wpdmdl=4301 -O hdf5.tar.gz
+wget https://www.hdfgroup.org/package/gzip/?wpdmdl=11810 -O hdf5.tar.gz
 ```
 2. Extract HDF5 to the directory `hdf5`:
 ```
@@ -151,7 +151,7 @@ mkdir lapack/build; cd lapack/build; cmake -DCMAKE_INSTALL_PREFIX:PATH=$(pwd)/..
 
 4. Link to libraries in `lib`-directory, if installed to `lib64`. `lib` is what we use for the MOAB installation:
 ```
-ln -s $(pwd)/../../libs/lib64/lib*.a $(pwd)/../../libs/
+ln -s $(pwd)/../../libs/lib64/lib*.a $(pwd)/../../libs/lib
 ```
 
 ## MOAB
