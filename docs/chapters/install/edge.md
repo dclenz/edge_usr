@@ -106,7 +106,7 @@ The library can also be used in the installation of MOAB (unstructured mesh inte
 
 1. Download the sources ("NetCDF-C Releases") from https://www.unidata.ucar.edu/downloads/netcdf/index.jsp:
 ```
-wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.4.1.1.tar.gz -O netcdf.tar.gz
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.6.1.tar.gz -O netcdf.tar.gz
 ```
 
 2. Extract NetCDF to the directory `netcdf`:
@@ -122,7 +122,7 @@ cd netcdf; HDF5DIR=$(pwd)/../libs CPPFLAGS=-I${HDF5DIR}/include LDFLAGS=-L${HDF5
 ```
   * MPI-parallel with OpenMPI-wrapper:
 ```
-cd netcdf; CC=mpicc HDF5DIR=$(pwd)/../libs CPPFLAGS=-I${HDF5DIR}/include LDFLAGS=-L${HDF5DIR}/lib ./configure --enable-shared=no --disable-dap --prefix=$(pwd)/../libs
+cd netcdf; CC=mpicc HDF5DIR=$(pwd)/../libs ZLIBDIR=$(pwd)/../libs CPPFLAGS="-I${HDF5DIR}/include -I${ZLIBDIR}/include" LDFLAGS="-L${HDF5DIR}/lib -L${ZLIBDIR}/lib" ./configure --enable-shared=no --disable-dap --prefix=$(pwd)/../libs
 ```
 Check that the configuration, printed at the very end matches your expectations.
 
@@ -164,19 +164,19 @@ cd submodules/moab; autoreconf -fi
 ```
 
 2. Configure the installation, three examples:
-  * Sequential example using GNU compilers and OpenBlas:
+  * Sequential example using GNU compilers:
 ```
-LIBS="-lgfortran -lquadmath -lm" F77=gfortran F90=gfortran FC=gfortran CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+ZLIBDIR=$(pwd)/../../libs LIBS="${ZLIBDIR}/lib/libz.a -lgfortran -lquadmath -lm" F77=gfortran F90=gfortran FC=gfortran CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-zlib=${ZLIBDIR} --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
   * MPI-parallel example using Intel compilers:
 ```
-F77=mpiifort F90=mpiifort FC=mpiifort CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib64/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+ZLIBDIR=$(pwd)/../../libs LIBS="${ZLIBDIR}/lib/libz.a" F77=mpiifort F90=mpiifort FC=mpiifort CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --enable-tools --with-blas=$(pwd)/../../libs/lib/libblas.a --with-lapack=$(pwd)/../../libs/lib/liblapack.a --with-zlib=${ZLIBDIR} --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
   * MPI-parallel example using Intel compilers, Intel MPI and Intel MKL:
 ```
-F77=mpiifort F90=mpiifort CC=mpiicc CXX=mpiicpc CFLAGS=-mkl CXXFLAGS=-mkl FCFLAGS=-mkl LDFLAGS=-mkl RUNPARALLEL="mpiexec.hydra -n 4" ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+ZLIBDIR=$(pwd)/../../libs LIBS="${ZLIBDIR}/lib/libz.a" F77=mpiifort F90=mpiifort CC=mpiicc CXX=mpiicpc CFLAGS=-mkl CXXFLAGS=-mkl FCFLAGS=-mkl LDFLAGS=-mkl RUNPARALLEL="mpiexec.hydra -n 4" ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-mpi --disable-fortran --with-zlib=${ZLIBDIR} --with-hdf5=$(pwd)/../../libs --with-netcdf=$(pwd)/../../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 ```
 
 3. Now you can build MOAB with `make` and install it through `make install`.
@@ -249,14 +249,14 @@ tar -czf /tmp/edge.tar.gz edge
 ```
 3. Create a Singularity container image of with a maximum size of 8 GiB (8192 MiB):
 ```
-sudo singularity create -s 8192 /tmp/edge.img
+sudo singularity image.create -s 8192 /tmp/edge.img
 ```
 4. Import EDGE's source code:
 ```
-gunzip -c /tmp/edge.tar.gz | sudo singularity import /tmp/edge.img
+gunzip -c /tmp/edge.tar.gz | sudo singularity image.import /tmp/edge.img
 ```
 5. Run the bootstrap to install the dependencies and EDGE-configurations:
 ```
-sudo singularity bootstrap /tmp/edge.img ./debian.def
+sudo singularity build /tmp/edge.simg ./debian.def
 ```
 6. The bootstrap might run for several hours, maybe grab a coffee.
