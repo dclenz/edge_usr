@@ -100,7 +100,7 @@ zlib is a requirement for the HDF5 library.
 
 HDF5
 ----
-HDF5 is a requirement for the NetCDF library, which is used for kinematic source descriptions.
+HDF5 is a requirement for point source descriptions.
 Futher, we recommend building MOAB, EDGE's interface to unstructured meshes, with HDF5-support.
 MOAB's native mesh format uses HDF5, which allows fast parsing of large meshes in parallel simulations.
 
@@ -134,43 +134,6 @@ MOAB's native mesh format uses HDF5, which allows fast parsing of large meshes i
 
 4. Finally run ``make`` to build the library and ``make install`` to put it in the ``libs`` directory.
 
-NetCDF
-------
-NetCDF is a requirement for kinematic source descriptions, including single point sources.
-The library can also be used in the installation of MOAB (unstructured mesh interface) to allow reading of exodus-meshes.
-However, we typically use Gmsh's ASCII-format or MOAB's HDF5-format.
-
-1. Download the sources ("NetCDF-C Releases") from https://www.unidata.ucar.edu/downloads/netcdf/index.jsp:
-
-   .. code-block:: bash
-
-     wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.6.0.tar.gz -O netcdf.tar.gz
-
-2. Extract NetCDF to the directory ``netcdf``:
-
-   .. code-block:: bash
-
-     mkdir netcdf; tar -xzf netcdf.tar.gz -C netcdf --strip-components=1
-
-3. Configure the installation and set ``libs`` as installation directory. Adjust the path to HDF5, if necessary.
-Two examples:
-
-* Sequential:
-
-  .. code-block:: bash
-
-    cd netcdf; CPPFLAGS=-I$(pwd)/../libs/include LDFLAGS=-L$(pwd)/../libs/lib ./configure --enable-shared=no --disable-dap --prefix=$(pwd)/../libs
-
-* MPI-parallel with OpenMPI-wrapper:
-
-  .. code-block:: bash
-
-    cd netcdf; CC=mpicc CPPFLAGS="-I$(pwd)/../libs/include" LDFLAGS="-L$(pwd)/../libs/lib" ./configure --enable-shared=no --disable-dap --prefix=$(pwd)/../libs
-
-  Check that the configuration, printed at the very end matches your expectations.
-
-4. Finally run ``make`` to build the library and ``make install`` to put NetCDF in the ``libs`` directory.
-
 MOAB
 ----
 If using unstructured meshes in EDGE, you need to provide an installation of `MOAB <http://sigma.mcs.anl.gov/moab-library/>`_.
@@ -188,13 +151,13 @@ Since ASCII-only builds of MOAB are troublesome, building with HDF5-support also
 
      .. code-block:: bash
 
-      LIBS="$(pwd)/../libs/lib/libz.a" CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../libs --with-hdf5=$(pwd)/../libs --with-netcdf=$(pwd)/../libs --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+      LIBS="$(pwd)/../../libs/lib/libz.a" CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs --with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 
    * MPI-parallel example using Intel compilers:
 
      .. code-block:: bash
 
-      LIBS="$(pwd)/../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../libs --with-hdf5=$(pwd)/../libs--with-netcdf=$(pwd)/../libs --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
+      LIBS="$(pwd)/../../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs--with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
 
 3. Now you can build MOAB with ``make`` and install it through ``make install``.
 
@@ -267,9 +230,7 @@ EDGE provides a Debian-bootstrap for automated installation of different configu
 +--------------+------------------------------------------------+
 | zlib         | yes                                            |
 +--------------+------------------------------------------------+
-| hdf5         | yes                                            |
-+--------------+------------------------------------------------+
-| netcdf       | yes (enables kinematic sources)                |
+| hdf5         | yes (enables kinematic sources)                |
 +--------------+------------------------------------------------+
 | moab         | yes (unstructured meshes), no (regular meshes) |
 +--------------+------------------------------------------------+

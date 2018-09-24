@@ -30,7 +30,6 @@ The comment ``<!-- [...] -->`` indicates, that a node is allowed to appear multi
       <xsmm/>
       <zlib/>
       <hdf5/>
-      <netcdf/>
       <moab/>
       <inst/>
     </build>
@@ -91,10 +90,10 @@ The comment ``<!-- [...] -->`` indicates, that a node is allowed to appear multi
       </velocity_model>
 
       <setups>
-        <kinematic_sources>
+        <point_sources>
           <file/>
           <!-- [...] -->
-        </kinematic_sources>
+        </point_sources>
 
         <end_time/>
       </setups>
@@ -145,7 +144,7 @@ EDGE also parses ``<build>`` at runtime, however the information is only logged 
 +==============+========================================+=====================================================================================================================================================================================+
 | cfr          | 1, 2, 4, 8, 12, 16                     | Number of concurrent/fused forward runs. 1, 4, 8, and 16 are typically used.                                                                                                        |
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| equations    | advection, elastic, swe                | Equations solved. advection: advection equation, elastic: elastic wave equations with kinematic sources, swe: shallow water equations.                                              |
+| equations    | advection, elastic, swe                | Equations solved. advection: advection equation, elastic: elastic wave equations, swe: shallow water equations.                                                                     |
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | element_type | line, quad4r, tria3, hex8r, tet4       | Element type used for spatial discretization. line: line elements, quad4r: 4-node, rectangular quads, tria3: 3-node triangles, hex8r: 8-node, rectangular hexes, tet4: 4-node tets. |
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -171,9 +170,7 @@ EDGE also parses ``<build>`` at runtime, however the information is only logged 
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | hdf5         | yes, no, path/to/hdf5                  | hdf5 support.                                                                                                                                                                       |
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| netcdf       | yes, no, path/to/netcdf                | NetCDF support.                                                                                                                                                                     |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| moab         | yes, no, path/to/netcdf                | MOAB support. If MOAB is enabled, EDGE is build with support for unstructured meshes. If disabled, EDGE is build with support for regular meshes.                                   |
+| moab         | yes, no, path/to/moab                  | MOAB support. If MOAB is enabled, EDGE is build with support for unstructured meshes. If disabled, EDGE is build with support for regular meshes.                                   |
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | inst         | yes, no                                | EDGE's high-level code instrumentation through the Score-P library.                                                                                                                 |
 +--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -284,13 +281,13 @@ All other points are outside.
 The node `<setups>` describes the setups of the fused simulations.
 A setup is given by initial values or source terms, and the shared end time of all fused simulations.
 
-+-------------------+-----------------+--------------------------------------------------------------------------------------------------+
-| Node              | Attributes      | Description                                                                                      |
-+===================+=================+==================================================================================================+
-| kinematic_sources | ``<file/>``     | One or more files, each containing a kinematic source description for a single fused simulation. |
-+-------------------+-----------------+--------------------------------------------------------------------------------------------------+
-| end_time          |                 | End time of the fused simulations.                                                               |
-+-------------------+-----------------+--------------------------------------------------------------------------------------------------+
++---------------+-----------------+---------------------------------------------------------------------------------------------------+
+| Node          | Attributes      | Description                                                                                       |
++===============+=================+===================================================================================================+
+| point_sources | ``<file/>``     | One or more HDF5-files, each containing a point source description for a single fused simulation. |
++---------------+-----------------+---------------------------------------------------------------------------------------------------+
+| end_time      |                 | End time of the fused simulations.                                                                |
++---------------+-----------------+---------------------------------------------------------------------------------------------------+
 
 <output>
 --------

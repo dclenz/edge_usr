@@ -11,7 +11,7 @@
   chapters/setup/config.rst
   chapters/setup/meshes.rst
   chapters/setup/seismic/resources.rst
-  chapters/setup/seismic/kinematic.rst
+  chapters/setup/seismic/sources.rst
 
   chapters/tools/edge_v.rst
 

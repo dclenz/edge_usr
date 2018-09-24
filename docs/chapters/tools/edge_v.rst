@@ -51,7 +51,7 @@ With a MOAB installation in ``../../libs`` and UCVM installation in ``../../libs
 
 .. code-block:: bash
 
-  scons moab=../../libs ucvm=../../libs/ucvm-17.1.0/ zlib=../../libs hdf5=../../libs netcdf=$(pwd)/../../libs
+  scons moab=../../libs ucvm=../../libs/ucvm-17.1.0/ zlib=../../libs hdf5=../../libs netcdf=no
 
 Usage
 -----
