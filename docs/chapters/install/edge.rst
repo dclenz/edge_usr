@@ -151,13 +151,13 @@ Since ASCII-only builds of MOAB are troublesome, building with HDF5-support also
 
      .. code-block:: bash
 
-      CXXFLAGS="-fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=gcc CXX=g++ ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs --with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+      CXXFLAGS="-DEIGEN_DONT_VECTORIZE -fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=gcc CXX=g++ ./configure --disable-debug --disable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs --with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
 
    * MPI-parallel example using Intel compilers:
 
      .. code-block:: bash
 
-      CXXFLAGS="-fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --enable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs--with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
+      CXXFLAGS="-DEIGEN_DONT_VECTORIZE -fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --disable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs--with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
 
 3. Now you can build MOAB with ``make`` and install it through ``make install``.
 
