@@ -1,15 +1,24 @@
-EDGE-CUT
+EDGEcut
 =========
-EDGE-CUT is a tool for generating surface meshes for a computational domain with topography. It makes
+EDGEcut is a tool for generating surface meshes for a computational domain with topography. It makes
 heavy use of the `Computational Geometry Algorithms Library <https://www.cgal.org/>`_ (CGAL), particularly the
 `3D Mesh Generation <https://doc.cgal.org/latest/Mesh_3/index.html#Chapter_3D_Mesh_Generation/>`_,
 `Polygon Mesh Processing <https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#Chapter_PolygonMeshProcessing/>`_,
 and `3D Polyhedral Surface <https://doc.cgal.org/latest/Polyhedron/index.html#Chapter_3D_Polyhedral_Surfaces/>`_ packages.
 
+EDGEcut takes as input a rectangular sampling from a topographical profile and generates a triangular
+surface mesh approximating the topographical surface. A number of options are provided to
+guide the mesh generation process. The target triangle size in the final mesh can vary throughout
+the region, if desired.  After the topographical surface is meshed, EDGEcut constructs a rectangular box that
+matches the boundary of the topography and then refines it in order to create closed, conformal
+mesh. The topography mesh and boundary mesh are then output in `OFF format <https://people.sc.fsu.edu/~jburkardt/data/off/off.html/>`_
+as *separate* files.
+
+.. image:: EDGEcut_example.svg
 
 Dependencies
 ---------------
-EDGE-CUT has the following dependencies:
+EDGEcut has the following dependencies:
 
 * `GCC <https://www.gnu.org/software/gcc/>`_ version 5 or higher
 * `SCons <https://scons.org/>`_
@@ -21,6 +30,11 @@ EDGE-CUT has the following dependencies:
   * `MPFR <http://www.mpfr.org/>`_ version 2.2.1 or higher
   * `zlib <http://www.zlib.net/>`_
 
+.. WARNING::
+  `CGAL version 4.13 <https://www.cgal.org/2018/10/01/cgal413/>`_ and later require the
+  `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page/>`_ library as a dependency.
+  The meshing library used in EDGEcut also contains some breaking changes in CGAL 4.13. Please be sure
+  you are using the correct version.
 
 Build Instructions
 --------------------
@@ -35,17 +49,13 @@ SCons
 
 Boost
 ^^^^^^^
-The Boost C++ Libraries are a dependency of CGAL; however, they must also be linked to EDGE-CUT at build-time.
-EDGE-CUT requires the ``Boost.Thread`` and ``Boost.System`` libraries to be installed (these libraries are not header-only).
+EDGEcut requires the ``Boost.Thread`` and ``Boost.System`` libraries to be installed (these libraries are not header-only).
 Since Boost is a CGAL dependency, these libraries must be installed before attempting to install CGAL.
 For more information on how to install Boost libraries, please see the `Boost Getting Started Guide <https://www.boost.org/doc/libs/1_68_0/more/getting_started/index.html/>`_.
 
-If you are using a Windows system, CGAL requires additional Boost libraries. EDGE-CUT has not been tested on Windows, but you can
-read more about these additional requirements in the `CGAL Installation Manual <https://doc.cgal.org/latest/Manual/installation.html#secessential3rdpartysoftware/>`_.
-
 CGAL
 ^^^^^^
-EDGE-CUT has been tested with CGAL version 4.12.1. CGAL releases are designed for backwards-compatibility,
+EDGEcut has been tested with CGAL version 4.12.1. CGAL releases are designed for backwards-compatibility,
 but there is always a risk that future versions may introduce unforeseen changes in behavior.
 
 The `CGAL Installation Manual <https://doc.cgal.org/latest/Manual/installation.html/>`_ provides a comprehensive set of
@@ -90,11 +100,11 @@ A non-exhaustive list is given below. For more a more comprehensive list, see th
 |                              || **Defaults to:** ``/usr/local``                                 |
 +------------------------------+------------------------------------------------------------------+
 | -DWITH_CGAL_ImageIO          || Sets whether or not to build the component ``CGAL_ImageIO``.    |
-|                              || (This component is not needed by EDGE-CUT)                      |
+|                              || (This component is not needed by EDGEcut)                       |
 |                              || **Defaults to:** "ON"                                           |
 +------------------------------+------------------------------------------------------------------+
 | -DWITH_CGAL_Qt5              || Sets whether or not to build the component ``CGAL_Qt5``.        |
-|                              || (This component is not needed by EDGE-CUT)                      |
+|                              || (This component is not needed by EDGEcut)                       |
 |                              || **Defaults to:** "ON"                                           |
 +------------------------------+------------------------------------------------------------------+
 | -DBUILD_SHARED_LIBS          || Builds shared libraries when set to "TRUE", builds static       |
@@ -123,7 +133,7 @@ A non-exhaustive list is given below. For more a more comprehensive list, see th
 .. IMPORTANT::
   It is highly recommended that you check the output of CMake at the end of the configuration step to make sure
   the configuration is what you expect. CMake will specify the versions and locations of its dependencies, as well
-  as which "CGAL components" have been built (only CGAL_Core is required for EDGE-CUT).
+  as which "CGAL components" have been built (only CGAL_Core is required for EDGEcut).
 
 After configuration, you can complete the build process by running
 
@@ -137,12 +147,12 @@ After configuration, you can complete the build process by running
 .. WARNING::
   CGAL installs its libraries in ``${CMAKE_INSTALL_PREFIX}/lib64`` (if you configured with default options this
   is ``/usr/loca/lib64``).  On some systems, this is not one of the default search paths, which will lead linking
-  errors when EDGE-CUT is built. The easiest way to fix this is to add this directory to your ``LIBRARY_PATH``
+  errors when EDGEcut is built. The easiest way to fix this is to add this directory to your ``LIBRARY_PATH``
   environment variable.
 
-EDGE-CUT
+EDGEcut
 ^^^^^^^^^^
-To build EDGE-CUT, simply invoke scons with no additional arguments:
+To build EDGEcut, simply invoke scons with no additional arguments:
 
 .. code-block:: bash
 
@@ -174,3 +184,116 @@ See `this warning <cgal-linkpath-warn_>`__ for more information.
 
 Usage
 ---------
+EDGEcut requires a single command-line argument, which is an XML configuration file.
+
+.. code-block:: bash
+
+  ./edge_cut example.xml
+
+The structure of the XML tree expected by EDGEcut looks like the following:
+
+.. code-block:: bash
+
+  <io>
+    <topo_in/>
+    <topo_out/>
+    <bdry_out/>
+  </io>
+  <bbox>
+    <xMin/>
+    <xMax/>
+    <yMin/>
+    <yMax/>
+    <zMin/>
+    <zMax/>
+  </bbox>
+  <refine>
+    <edge/>
+    <facet/>
+    <approx/>
+    <angle/>
+  </refine>
+  <region>
+    <inner_rad/>
+    <outer_rad/>
+    <center>
+      <x/>
+      <y/>
+      <z/>
+    </center>
+    <scale/>
+  </region>
+
+A description of each parameter is given in the following table.
+
++--------------------+------------------------------------------------------------------------------+
+| Attribute          | Description                                                                  |
++====================+==============================================================================+
+|| topo_in           || File name of input file containing a representation of the topography to    |
+|                    || be meshed. See :ref:`topo-description` for more information.                |
++--------------------+------------------------------------------------------------------------------+
+|| topo_out          || File name of the output OFF file which will contain the topography          |
+|                    || surface mesh                                                                |
++--------------------+------------------------------------------------------------------------------+
+|| bdry_out          || File name of the output OFF file which will contain the boundary            |
+|                    || surface mesh                                                                |
++--------------------+------------------------------------------------------------------------------+
+|| bbox:             || Boundary box which defines the region to be meshed. The topographical       |
+||   xMin            || features must be contained below ``zMax``. See :ref:`topo-description` for  |
+||   xMax            || more detail on how to define ``bbox``.                                      |
+||   yMin            |                                                                              |
+||   yMax            |                                                                              |
+||   zMin            |                                                                              |
+||   zMax            |                                                                              |
++--------------------+------------------------------------------------------------------------------+
+|| edge              || **Applies to edges at intersection of topography and boundary only**        |
+|                    || Target edge length for the meshing algorithm.                               |
++--------------------+------------------------------------------------------------------------------+
+|| facet             || Target facet size for the meshing algorithm. Facet size is defined to be    |
+|                    || the radius of the `Surface Delaunay Ball                                    |
+|                    |  <https://doc.cgal.org/latest/Mesh_3/                                        |
+|                    |  index.html#Mesh_3TheMeshingCriteria/>`_    around the facet.                |
+|                    || This is the primary sizing criterion for the mesher.                        |
++--------------------+------------------------------------------------------------------------------+
+|| approx            || Meshing criterion which describes how well the surface mesh approximates    |
+|                    || the topographical surface. The CGAL manual has a `formal definition         |
+|                    |  <https://doc.cgal.org/latest/Mesh_3/index.html#Mesh_3TheMeshingCriteria/>`_.|
+|                    || A value one-fifth to one-tenth the size of ``facet`` is often a reasonable  |
+|                    || number to start with.                                                       |
++--------------------+------------------------------------------------------------------------------+
+|| angle             || Meshing criterion setting the lower bound for the angle size (in degrees)   |
+|                    || of facets in the final surface mesh.                                        |
+|                    || **Must be <= 30 to guarantee that mesher terminates**                       |
++--------------------+------------------------------------------------------------------------------+
+|| inner_rad         || Radius of circular region in which topography has the minimum refinement    |
+|                    || level (specified by ``facet`` and ``approx``).                              |
++--------------------+------------------------------------------------------------------------------+
+|| outer_rad         || Radius outside of which the topography refinement is inflated by a factor   |
+|                    || of ``scale``. The refinement level of facets between ``inner_rad`` and      |
+|                    || ``outer_rad`` increases linearly.                                           |
++--------------------+------------------------------------------------------------------------------+
+|| center            || Center point of the circular refinement regions.                            |
++--------------------+------------------------------------------------------------------------------+
+|| scale             || Scaling factor describes how the facet size is coarsened from the central   |
+|                    || refinement region to the outer edges of the computational domain.           |
+|                    || For uniform refinement everywhere, set ``scale=1``.                         |
++--------------------+------------------------------------------------------------------------------+
+
+
+.. _topo-description:
+
+Topographical Input
+^^^^^^^^^^^^^^^^^^^^
+In order to create a surface mesh approximating a topographical profile, EDGEcut requires that the XML
+configuration contain a file path to a representation of the topography (the ``topo_in`` node).
+
+The topographical profile to be meshed must be sampled as a pre-processing step.  The file containing these
+sampled points is then passed to EDGEcut as ``topo_in``. The file should be a space-separated table, where
+each row represents a point. There must be three columns, representing the x, y, and z coordinates of the point.
+EDGEcut has only been tested with regular samplings on a rectangular grid, and is expected to fail if this is
+another sampling is used.
+
+.. IMPORTANT::
+  At present, the sampling of the topography must perfectly align with the xy-bounding box specified in the XML
+  configuration (``bbox``). That is, there should be sequences of sampled points along the lines *x=xMin*, *x=xMax*,
+  *y=yMin*, and *y=yMax*.
