@@ -11,7 +11,7 @@ surface mesh approximating the topographical surface. A number of options are pr
 guide the mesh generation process. The target triangle size in the final mesh can vary throughout
 the region, if desired.  After the topographical surface is meshed, EDGEcut constructs a rectangular box that
 matches the boundary of the topography and then refines it in order to create closed, conformal
-mesh. The topography mesh and boundary mesh are then output in `OFF format <https://people.sc.fsu.edu/~jburkardt/data/off/off.html/>`_
+mesh. The topography mesh and boundary mesh are then output in `OFF format <https://people.sc.fsu.edu/~jburkardt/data/off/off.html>`_
 as *separate* files.
 
 .. image:: EDGEcut_example.svg
@@ -22,7 +22,7 @@ EDGEcut has the following dependencies:
 
 * `GCC <https://www.gnu.org/software/gcc/>`_ version 5 or higher
 * `SCons <https://scons.org/>`_
-* `CGAL version 4.12.1 <https://doc.cgal.org/4.12.1/Manual/installation.html/>`_, which has its own `set of dependencies <https://doc.cgal.org/4.12.1/Manual/installation.html#secessential3rdpartysoftware/>`_:
+* `CGAL version 4.12.1 <https://doc.cgal.org/4.12.1/Manual/installation.html>`_, which has its own `set of dependencies <https://doc.cgal.org/4.12.1/Manual/installation.html#secessential3rdpartysoftware/>`_:
 
   * `CMake <https://cmake.org/>`_ version 3.1 or higher
   * `Boost C++ Libraries <https://www.boost.org/>`_ version 1.48 or higher, with ``Boost.Thread`` and ``Boost.System`` installed
@@ -32,7 +32,7 @@ EDGEcut has the following dependencies:
 
 .. WARNING::
   `CGAL version 4.13 <https://www.cgal.org/2018/10/01/cgal413/>`_ and later require the
-  `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page/>`_ library as a dependency.
+  `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_ library as a dependency.
   The meshing library used in EDGEcut also contains some breaking changes in CGAL 4.13. Please be sure
   you are using the correct version.
 
@@ -51,14 +51,14 @@ Boost
 ^^^^^^^
 EDGEcut requires the ``Boost.Thread`` and ``Boost.System`` libraries to be installed (these libraries are not header-only).
 Since Boost is a CGAL dependency, these libraries must be installed before attempting to install CGAL.
-For more information on how to install Boost libraries, please see the `Boost Getting Started Guide <https://www.boost.org/doc/libs/1_68_0/more/getting_started/index.html/>`_.
+For more information on how to install Boost libraries, please see the `Boost Getting Started Guide <https://www.boost.org/doc/libs/1_68_0/more/getting_started/index.html>`_.
 
 CGAL
 ^^^^^^
 EDGEcut has been tested with CGAL version 4.12.1. CGAL releases are designed for backwards-compatibility,
 but there is always a risk that future versions may introduce unforeseen changes in behavior.
 
-The `CGAL Installation Manual <https://doc.cgal.org/latest/Manual/installation.html/>`_ provides a comprehensive set of
+The `CGAL Installation Manual <https://doc.cgal.org/latest/Manual/installation.html>`_ provides a comprehensive set of
 instructions for installing CGAL and is good reference if the "quick install" instructions below do not suffice for your system.
 
 Before building CGAL, make sure that you have installed GMP, MPFR, zlib, Boost, and CMake. It is recommended that you add the locations
