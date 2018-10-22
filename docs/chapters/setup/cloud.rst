@@ -1,11 +1,11 @@
 HPC in the Cloud
 ================
 EDGE is able to run on cloud infrastructure.
-Currently, the only tested service is the Google Compute Platform (`GCP <https://cloud.google.com/compute/docs/>`_).
+Currently, the only tested service is the Google Cloud Platform (`GCP <https://cloud.google.com/compute/docs/>`_).
 
-Google Compute Platform
------------------------
-The Google Compute Platform (`GCP <https://cloud.google.com/compute/docs/>`_) offers a large set of available configurations.
+Google Cloud Platform
+---------------------
+The Google Cloud Platform (`GCP <https://cloud.google.com/compute/docs/>`_) offers a large set of available configurations.
 In this section we a) consider the use case of a single instance, sufficient for shared memory parallel workloads,
 and b) set up a Slurm-operated cluster, combining multiple nodes, ready for use of the Message Passing Interface (MPI).
 
