@@ -80,7 +80,7 @@ Slurm Cluster
 This section describes the required steps to start a preconfigured high performance computing cluster for use with EDGE.
 Further information is available from Google's `Codelabs <https://codelabs.developers.google.com>`_, which provides an `introduction <https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/>`_ to Slurm in GCP.
 
-1. Download `EDGE's Slurm deployment configuration <https://github.com/3343/slurm-gcp/tree/master/contribs/gcp>`_ for GCP:
+1. Download `EDGE's Slurm deployment configuration <https://github.com/3343/slurm-gcp>`_ for GCP:
 
    .. code-block:: bash
 
