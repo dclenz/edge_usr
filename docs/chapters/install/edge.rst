@@ -1,6 +1,7 @@
 Installation
 ============
-This chapter describes the installation of EDGE and its dependencies.
+This chapter describes the manual installation of EDGE and its dependencies from scratch.
+If you are looking for an automated installation, consider skipping to sub-section `Singularity Bootstrap`_ or EDGE's support for cloud infrastructure in Sec. :doc:`../setup/cloud`.
 
 Examples
 --------
@@ -157,7 +158,7 @@ Since ASCII-only builds of MOAB are troublesome, building with HDF5-support also
 
      .. code-block:: bash
 
-      CXXFLAGS="-DEIGEN_DONT_VECTORIZE -fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --disable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs--with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
+      CXXFLAGS="-DEIGEN_DONT_VECTORIZE -fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --disable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs --with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
 
 3. Now you can build MOAB with ``make`` and install it through ``make install``.
 
