@@ -279,7 +279,7 @@ and enclosed on the top by the topographical surface.
 | Attribute          | Description                                                                  |
 +====================+==============================================================================+
 ||   xMin            || Coordinates defining the bounding planes of the region to be meshed. See    |
-||   xMax            || :ref:`topo-description` for more detail on how to define ``bbox``.          |
+||   xMax            || :ref:`topo-description` for more detail on how to define ``bounding_box``.  |
 ||   yMin            |                                                                              |
 ||   yMax            |                                                                              |
 ||   zMin            |                                                                              |
@@ -337,8 +337,8 @@ differs outside of this region.
 |                    || level (specified by ``facet`` and ``approx``).                              |
 +--------------------+------------------------------------------------------------------------------+
 || outer_radius      || Radius outside of which the topography refinement is inflated by a factor   |
-|                    || of ``scale``. The refinement level of facets between ``inner_rad`` and      |
-|                    || ``outer_rad`` increases linearly.                                           |
+|                    || of ``scale``. The refinement level of facets between ``inner_radius`` and   |
+|                    || ``outer_radius`` increases linearly.                                           |
 +--------------------+------------------------------------------------------------------------------+
 || center            || Center point of the circular refinement regions.                            |
 +--------------------+------------------------------------------------------------------------------+
