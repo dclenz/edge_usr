@@ -338,7 +338,7 @@ differs outside of this region.
 +--------------------+------------------------------------------------------------------------------+
 || outer_radius      || Radius outside of which the topography refinement is inflated by a factor   |
 |                    || of ``scale``. The refinement level of facets between ``inner_radius`` and   |
-|                    || ``outer_radius`` increases linearly.                                           |
+|                    || ``outer_radius`` increases linearly.                                        |
 +--------------------+------------------------------------------------------------------------------+
 || center            || Center point of the circular refinement regions.                            |
 +--------------------+------------------------------------------------------------------------------+
