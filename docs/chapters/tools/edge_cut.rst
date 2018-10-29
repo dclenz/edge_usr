@@ -22,19 +22,15 @@ EDGEcut has the following dependencies:
 
 * `GCC <https://www.gnu.org/software/gcc/>`_ version 5 or higher
 * `SCons <https://scons.org/>`_
-* `CGAL version 4.12.1 <https://doc.cgal.org/4.12.1/Manual/installation.html>`_, which has its own `set of dependencies <https://doc.cgal.org/4.12.1/Manual/installation.html#secessential3rdpartysoftware/>`_:
+* `CGAL version 4.13 <https://doc.cgal.org/4.13/Manual/installation.html>`_, which has its own `set of dependencies <https://doc.cgal.org/latest/Manual/installation.html#secessential3rdpartysoftware>`_:
 
   * `CMake <https://cmake.org/>`_ version 3.1 or higher
   * `Boost C++ Libraries <https://www.boost.org/>`_ version 1.48 or higher, with ``Boost.Thread`` and ``Boost.System`` installed
+  * `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_ version 3.1 or later (included with EDGE as a submodule)
   * `GMP <http://gmplib.org/>`_ version 4.2 or higher
   * `MPFR <http://www.mpfr.org/>`_ version 2.2.1 or higher
   * `zlib <http://www.zlib.net/>`_
 
-.. WARNING::
-  `CGAL version 4.13 <https://www.cgal.org/2018/10/01/cgal413/>`_ and later require the
-  `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_ library as a dependency.
-  The meshing library used in EDGEcut also contains some breaking changes in CGAL 4.13. Please be sure
-  you are using the correct version.
 
 Build Instructions
 --------------------
@@ -53,24 +49,34 @@ EDGEcut requires the ``Boost.Thread`` and ``Boost.System`` libraries to be insta
 Since Boost is a CGAL dependency, these libraries must be installed before attempting to install CGAL.
 For more information on how to install Boost libraries, please see the `Boost Getting Started Guide <https://www.boost.org/doc/libs/1_68_0/more/getting_started/index.html>`_.
 
+Eigen
+^^^^^^^^
+The Eigen library is a header-only linear algebra library used by CGAL to perform
+Lloyd smoothing during mesh optimization. Eigen is included as a submodule of EDGE
+and should be found automatically by the CGAL installer. Therefore, there should be
+nothing for the user to do for this dependency.
+
+If you find that the Eigen submodule is not being used by CGAL, you can pass the `flag <https://doc.cgal.org/4.13/Manual/installation.html#installation_eigen>`_
+``-DEIGEN3_INCLUDE_DIR`` to cmake during the CGAL configuration step (see section below).
+
 CGAL
 ^^^^^^
-EDGEcut has been tested with CGAL version 4.12.1. CGAL releases are designed for backwards-compatibility,
+EDGEcut has been tested with CGAL version 4.13. CGAL releases are designed for backwards-compatibility,
 but there is always a risk that future versions may introduce unforeseen changes in behavior.
 
-The `CGAL Installation Manual <https://doc.cgal.org/latest/Manual/installation.html>`_ provides a comprehensive set of
+The `CGAL Installation Manual <https://doc.cgal.org/4.13/Manual/installation.html>`_ provides a comprehensive set of
 instructions for installing CGAL and is good reference if the "quick install" instructions below do not suffice for your system.
 
 Before building CGAL, make sure that you have installed GMP, MPFR, zlib, Boost, and CMake. It is recommended that you add the locations
 of GMP, MPFR, and Boost to your ``CPLUS_INCLUDE_PATH`` and ``LIBRARY_PATH`` environment variables. If you don't you will need to specify
 additional options during configuration (see below).
 
-You can download CGAL 4.12.1 with:
+You can download CGAL 4.13 with:
 
 .. code-block:: bash
 
-  wget https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.12.1/CGAL-4.12.1.tar.xz -O cgal-4.12.1.tar.xz
-  mkdir cgal-4.12.1; tar -xf cgal-4.12.1.tar.xz -C cgal-4.12.1 --strip-components=1
+  wget https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.13/CGAL-4.13.tar.xz -O cgal-4.13.tar.xz
+  mkdir cgal-4.13; tar -xf cgal-4.13.tar.xz -C cgal-4.13 --strip-components=1
 
 Then, configure CGAL with CMake:
 
@@ -88,7 +94,7 @@ configuration for someone who maintains software in ${HOME}/local might be:
 
 There are configuration flags for specifying the location of the install directory, the location of dependencies, and other options.
 A non-exhaustive list is given below. For more a more comprehensive list, see the CGAL manual section on
-`Configuring CGAL with CMake <https://doc.cgal.org/latest/Manual/installation.html#secconfigwithcmake/>`_.
+`Configuring CGAL with CMake <https://doc.cgal.org/4.13/Manual/installation.html#secconfigwithcmake/>`_.
 
 +------------------------------+------------------------------------------------------------------+
 | Configure Flag               | Description                                                      |
@@ -124,7 +130,7 @@ A non-exhaustive list is given below. For more a more comprehensive list, see th
 || -DGMP_INCLUDE_DIR           || Specifies the location of directories containing headers and    |
 || -DGMP_LIBRARIES_DIR         || libraries for GMP and MPFR. If not set, standard environment    |
 || -DMPFR_INCLUDE_DIR          || variables are used to locate the installations. `More options   |
-|| -DMPFR_LIBRARIES_DIR        |  <https://doc.cgal.org/latest/Manual/installation.               |
+|| -DMPFR_LIBRARIES_DIR        |  <https://doc.cgal.org/4.13/Manual/installation.                 |
 |                              |  html#installation_gmp/>`_                                       |
 |                              || are given in the manual.                                        |
 |                              || **Defaults to:** [None]                                         |
@@ -132,7 +138,7 @@ A non-exhaustive list is given below. For more a more comprehensive list, see th
 
 .. IMPORTANT::
   It is highly recommended that you check the output of CMake at the end of the configuration step to make sure
-  the configuration is what you expect. CMake will specify the versions and locations of its dependencies, as well
+  the configuration is what you expect. CMake will specify the versions and locations of CGAL's dependencies, as well
   as which "CGAL components" have been built (only CGAL_Core is required for EDGEcut).
 
 After configuration, you can complete the build process by running
@@ -194,89 +200,175 @@ The structure of the XML tree expected by EDGEcut looks like the following:
 
 .. code-block:: bash
 
-  <io>
-    <topo_in/>
-    <topo_out/>
-    <bdry_out/>
-  </io>
-  <bbox>
-    <xMin/>
-    <xMax/>
-    <yMin/>
-    <yMax/>
-    <zMin/>
-    <zMax/>
-  </bbox>
-  <refine>
-    <edge/>
-    <facet/>
-    <approx/>
-    <angle/>
-  </refine>
-  <region>
-    <inner_rad/>
-    <outer_rad/>
-    <center>
-      <x/>
-      <y/>
-      <z/>
-    </center>
-    <scale/>
-  </region>
+  <edge_cut>
+    <io>
+      <topography>
+        <in/>
+        <out/>
+      </topography>
+      <boundary>
+        <out/>
+      </boundary>
+    </io>
+    <bounding_box>
+      <xMin/>
+      <xMax/>
+      <yMin/>
+      <yMax/>
+      <zMin/>
+      <zMax/>
+    </bounding_box>
+    <refine>
+      <edge/>
+      <facet/>
+      <approx/>
+      <angle/>
+    </refine>
+    <region>
+      <inner_radius/>
+      <outer_radius/>
+      <center>
+        <x/>
+        <y/>
+        <z/>
+      </center>
+      <scale/>
+    </region>
+    <optimize>
+      <lloyd/>
+      <odt/>
+      <perturb/>
+      <exude/>
+      <time_limit/>
+    </optimize>
+  </edge_cut>
 
-A description of each parameter is given in the following table.
+A description of each parameter is given in the following sections.
+
+<io>
+^^^^^^
+The <io> node describes the files used by EDGEcut for input and output.
 
 +--------------------+------------------------------------------------------------------------------+
 | Attribute          | Description                                                                  |
 +====================+==============================================================================+
-|| topo_in           || File name of input file containing a representation of the topography to    |
+|| topography:in     || File name of input file containing a representation of the topography to    |
 |                    || be meshed. See :ref:`topo-description` for more information.                |
 +--------------------+------------------------------------------------------------------------------+
-|| topo_out          || File name of the output OFF file which will contain the topography          |
+|| topography:out    || File name of the output OFF file which will contain the topography          |
 |                    || surface mesh                                                                |
 +--------------------+------------------------------------------------------------------------------+
-|| bdry_out          || File name of the output OFF file which will contain the boundary            |
+|| boundary:out      || File name of the output OFF file which will contain the boundary            |
 |                    || surface mesh                                                                |
 +--------------------+------------------------------------------------------------------------------+
-|| bbox:             || Boundary box which defines the region to be meshed. The topographical       |
-||   xMin            || features must be contained below ``zMax``. See :ref:`topo-description` for  |
-||   xMax            || more detail on how to define ``bbox``.                                      |
+
+<bounding_box>
+^^^^^^^^^^^^^^^^^
+The <bounding_box> node describes the geometric region in which surface meshing takes place.
+The final surface mesh generated by EDGEcut will be bounded by the five planes
+
+| x = xMin
+| x = xMax
+| y = yMin
+| y = yMax
+| z = zMin
+
+and enclosed on the top by the topographical surface.
+
++--------------------+------------------------------------------------------------------------------+
+| Attribute          | Description                                                                  |
++====================+==============================================================================+
+||   xMin            || Coordinates defining the bounding planes of the region to be meshed. See    |
+||   xMax            || :ref:`topo-description` for more detail on how to define ``bbox``.          |
 ||   yMin            |                                                                              |
 ||   yMax            |                                                                              |
 ||   zMin            |                                                                              |
 ||   zMax            |                                                                              |
 +--------------------+------------------------------------------------------------------------------+
-|| edge              || **Applies to edges at intersection of topography and boundary only**        |
-|                    || Target edge length for the meshing algorithm.                               |
+
+<refine>
+^^^^^^^^^^^^
+The <refine> node describes the mesh refinement criteria that drives the CGAL meshing algorithm.
+
++--------------------+------------------------------------------------------------------------------+
+| Attribute          | Description                                                                  |
++====================+==============================================================================+
+|| edge              || **Applies to edges at intersection of topography and boundary only.**       |
+|                    || Target edge length for the meshing algorithm. It is recommended to set the  |
+|                    || value of ``edge`` to be less than ``facet`` but greater than one-half the   |
+|                    || value of ``facet``. However, this is just a rule of thumb.                  |
 +--------------------+------------------------------------------------------------------------------+
 || facet             || Target facet size for the meshing algorithm. Facet size is defined to be    |
 |                    || the radius of the `Surface Delaunay Ball                                    |
-|                    |  <https://doc.cgal.org/latest/Mesh_3/                                        |
+|                    |  <https://doc.cgal.org/4.13/Mesh_3/                                          |
 |                    |  index.html#Mesh_3TheMeshingCriteria/>`_    around the facet.                |
 |                    || This is the primary sizing criterion for the mesher.                        |
 +--------------------+------------------------------------------------------------------------------+
 || approx            || Meshing criterion which describes how well the surface mesh approximates    |
 |                    || the topographical surface. The CGAL manual has a `formal definition         |
-|                    |  <https://doc.cgal.org/latest/Mesh_3/index.html#Mesh_3TheMeshingCriteria/>`_.|
+|                    |  <https://doc.cgal.org/4.13/Mesh_3/index.html#Mesh_3TheMeshingCriteria/>`_.  |
 |                    || A value one-fifth to one-tenth the size of ``facet`` is often a reasonable  |
 |                    || number to start with.                                                       |
 +--------------------+------------------------------------------------------------------------------+
-|| angle             || Meshing criterion setting the lower bound for the angle size (in degrees)   |
+|| angle             || Meshing criterion which sets the lower bound for the angle size in degrees  |
 |                    || of facets in the final surface mesh.                                        |
 |                    || **Must be <= 30 to guarantee that mesher terminates**                       |
 +--------------------+------------------------------------------------------------------------------+
-|| inner_rad         || Radius of circular region in which topography has the minimum refinement    |
+
+<region>
+^^^^^^^^^^^
+The <region> node describes how the target mesh criteria vary throughout the topographical surface
+mesh (the refinement criteria is constant on the boundary mesh).
+
+.. figure:: EDGEcut_refine.png
+  :align: center
+
+  Surface mesh with varying mesh criteria (scale = 3)
+
+The criteria described by <refine> is enforced in a circular region centered at ``center`` with
+a radius of ``inner_radius``. The z-coordinate of a point (altitude) is not factored in when
+computing the distance to ``center``. The <region> node describes how the refinement criteria
+differs outside of this region.
+
++--------------------+------------------------------------------------------------------------------+
+| Attribute          | Description                                                                  |
++====================+==============================================================================+
+|| inner_radius      || Radius of circular region in which topography has the minimum refinement    |
 |                    || level (specified by ``facet`` and ``approx``).                              |
 +--------------------+------------------------------------------------------------------------------+
-|| outer_rad         || Radius outside of which the topography refinement is inflated by a factor   |
+|| outer_radius      || Radius outside of which the topography refinement is inflated by a factor   |
 |                    || of ``scale``. The refinement level of facets between ``inner_rad`` and      |
 |                    || ``outer_rad`` increases linearly.                                           |
 +--------------------+------------------------------------------------------------------------------+
 || center            || Center point of the circular refinement regions.                            |
 +--------------------+------------------------------------------------------------------------------+
-|| scale             || Scaling factor describes how the facet size is coarsened from the central   |
+|| scale             || Scaling factor describing how the facet size is coarsened from the central  |
 |                    || refinement region to the outer edges of the computational domain.           |
 |                    || For uniform refinement everywhere, set ``scale=1``.                         |
++--------------------+------------------------------------------------------------------------------+
+
+<optimize>
+^^^^^^^^^^^
+The <optimize> node is used to turn different mesh optimizers on and off. The possible
+mesh optimization steps are described in the `CGAL manual <https://doc.cgal.org/latest/Mesh_3/index.html#Mesh_3OptimizationPhase>`_.
+
++--------------------+------------------------------------------------------------------------------+
+| Attribute          | Description                                                                  |
++====================+==============================================================================+
+|| lloyd             || Turns the Lloyd smoothing global optimizer on or off. Defaults to "on".     |
+|                    || **Accepted inputs: "yes", "no"**                                            |
++--------------------+------------------------------------------------------------------------------+
+|| odt               || Turns the ODT smoothing global optimizer on or off. Defaults to "on".       |
+|                    || **Accepted inputs: "yes", "no"**                                            |
++--------------------+------------------------------------------------------------------------------+
+|| perturb           || Turns the sliver perturber local optimizer on or off. Defaults to "on".     |
+|                    || **Accepted inputs: "yes", "no"**                                            |
++--------------------+------------------------------------------------------------------------------+
+|| exude             || Turns the sliver exuder local optimizer on or off. Defaults to "on".        |
+|                    || **Accepted inputs: "yes", "no"**                                            |
++--------------------+------------------------------------------------------------------------------+
+|| time_limit        || Sets a time limit for each of the optimization steps above. If set to 0,    |
+|                    || no time limit is enforced.                                                  |
 +--------------------+------------------------------------------------------------------------------+
 
 
@@ -285,15 +377,15 @@ A description of each parameter is given in the following table.
 Topographical Input
 ^^^^^^^^^^^^^^^^^^^^
 In order to create a surface mesh approximating a topographical profile, EDGEcut requires that the XML
-configuration contain a file path to a representation of the topography (the ``topo_in`` node).
+configuration contain a file path to a representation of the topography (the ``topography:in`` node).
 
 The topographical profile to be meshed must be sampled as a pre-processing step.  The file containing these
-sampled points is then passed to EDGEcut as ``topo_in``. The file should be a space-separated table, where
+sampled points is then passed to EDGEcut as ``topography:in``. The file should be a space-separated table, where
 each row represents a point. There must be three columns, representing the x, y, and z coordinates of the point.
 EDGEcut has only been tested with regular samplings on a rectangular grid, and is expected to fail if this is
 another sampling is used.
 
 .. IMPORTANT::
   At present, the sampling of the topography must perfectly align with the xy-bounding box specified in the XML
-  configuration (``bbox``). That is, there should be sequences of sampled points along the lines *x=xMin*, *x=xMax*,
+  configuration (``bounding_box``). That is, there should be sequences of sampled points along the lines *x=xMin*, *x=xMax*,
   *y=yMin*, and *y=yMax*.
