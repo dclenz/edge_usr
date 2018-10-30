@@ -73,7 +73,7 @@ LIBXSMM is optional, but highly recommended due to severe performance-limitation
 
   .. code-block:: bash
 
-    cd submodules/libxsmm; PREFIX=../../libs make BLAS=0 install
+    cd submodules/libxsmm; PREFIX=../../libs make FORTRAN=0 BLAS=0 install
 
 zlib
 ----
@@ -109,7 +109,7 @@ MOAB's native mesh format uses HDF5, which allows fast parsing of large meshes i
 
    .. code-block:: bash
 
-     wget https://www.hdfgroup.org/package/gzip/?wpdmdl=11810 -O hdf5.tar.gz
+     wget https://www.hdfgroup.org/package/gzip/?wpdmdl=13048 -O hdf5.tar.gz
 
 2. Extract HDF5 to the directory ``hdf5``:
 
