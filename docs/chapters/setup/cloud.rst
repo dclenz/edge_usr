@@ -199,6 +199,8 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
      ssh centos@${EDGE_AWS_IP} "bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_tools.sh); \
                                 source /etc/bashrc; \
                                 bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_libs.sh); \
+                                source /etc/bashrc; \
+                                bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_hpc.sh); \
                                 sudo /usr/local/sbin/ami_cleanup.sh"
 
 
@@ -277,6 +279,8 @@ Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com
      # 30 GB for our volumes
      master_root_volume_size = 30
      compute_root_volume_size = 30
+     # create placement group with cluster deployment (increases network bandwidth)
+     placement_group = DYNAMIC
 
 
      ## VPC Settings
@@ -370,7 +374,9 @@ Single Instance
 
      gcloud compute ssh edge-skx --command "bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_tools.sh); \
                                             source /etc/bashrc; \
-                                            bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_libs.sh)"
+                                            bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_libs.sh); \
+                                            source /etc/bashrc; \
+                                            bash <(curl -s https://raw.githubusercontent.com/3343/edge/develop/tools/build/install_hpc.sh);"
 
 4. [Optional] We can use the instance to create a new disk image.
    This allows us to skip the install scripts, when creating new instances.
@@ -380,11 +386,11 @@ Single Instance
 
      gcloud compute instances stop edge-skx
   
-   Now, we create the image ``edge-centos-7-181027`` as part of the ``edge-centos-7`` family from the stopped instance:
+   Now, we create the image ``edge-centos-7-181030`` as part of the ``edge-centos-7`` family from the stopped instance:
 
    .. code-block:: bash
 
-     gcloud compute images create edge-centos-7-181027 \
+     gcloud compute images create edge-centos-7-181030 \
             --source-disk edge-skx \
             --family edge-centos-7
 
