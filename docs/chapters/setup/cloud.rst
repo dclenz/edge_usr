@@ -265,7 +265,7 @@ Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com
      # don't spawn any compute instances by default
      initial_queue_size = 0
      # maximum number of instances
-     max_queue_size = 10
+     max_queue_size = 16
      # allow down-scaling of the initial number of instances
      maintain_initial_size = false
      # use Slurm as a scheduler
