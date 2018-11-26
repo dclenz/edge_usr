@@ -144,7 +144,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
    In the next step, this is the CentOS 7 AMI with id ``ami-0053bef6747ca58bf`` in the ``us-west-2`` region, obtained from `CfnCluster <https://github.com/awslabs/cfncluster/blob/v1.6.0/amis.txt>`_.
    Update the id according to your region and to a possibly more recent version, matching your CfnCluster-version.
 
-2. Next, we launch a single spot ``c5.xlarge`` instance, which runs on SKX with 4 hyperthreads, 8GiB of memory and a 30GB of root disk.
+2. Next, we launch a single spot ``c5.18xlarge`` instance, which runs on SKX with 36 cores, 144GiB of memory and a 30GB of root disk.
    Further, our instance uses the public ssh-key and security group ``edge``.
 
   .. code-block:: bash
@@ -152,7 +152,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
     aws ec2 run-instances --image-id ami-0053bef6747ca58bf \
                           --block-device-mapping '[{ "DeviceName": "/dev/sda1","Ebs": {"VolumeSize": 30,"DeleteOnTermination": true} }]' \
                           --count 1 \
-                          --instance-type c5.xlarge \
+                          --instance-type c5.18xlarge \
                           --region us-west-2 \
                           --instance-market-options 'MarketType=spot' \
                           --security-group-ids edge \
@@ -174,6 +174,9 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
         aws ec2 describe-instances --region $region
       done
 
+  .. note::
+    Certain HPC-specific VM optimizations in the scripts below are triggered by the type of the operating system and the number of hyperthreads.
+
 3. [Optional] `Intel Parallel Studio XE <https://software.intel.com/en-us/parallel-studio-xe>`_ requires us to manually upload the installer for the tools script in the next step.
 
    First, `download <https://software.intel.com/en-us/parallel-studio-xe/choose-download>`_ the standard installer ("Customizable Package").
@@ -191,7 +194,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
      The tool-installation script in the next step searches for the installer.
      If found, it will automatically accept the EULA of Intel Parallel Studio XE in ``silent.cfg`` and proceed with the installation.
 
-4. This steps invokes the two scripts :edge_git:`install_tools.sh <tree/develop/tools/build/install_tools.sh>` and  :edge_git:`install_libs.sh <tree/develop/tools/build/install_libs.sh>` through ssh.
+4. This steps invokes the three scripts :edge_git:`install_tools.sh <tree/develop/tools/build/install_tools.sh>`,  :edge_git:`install_libs.sh <tree/develop/tools/build/install_libs.sh>`, :edge_git:`install_hpc.sh <tree/develop/tools/build/install_hpc.sh>` through ssh.
    The two scripts install required tools and libraries for use with EDGE:
 
    .. code-block:: bash
