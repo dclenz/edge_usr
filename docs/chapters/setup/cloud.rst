@@ -324,13 +324,13 @@ and b) set up a Slurm-operated cluster, combining multiple nodes, ready for use 
 Single Instance
 ^^^^^^^^^^^^^^^
 1. The following command creates the instance ``edge-skx``.
-   The preemtible instance in the ``us-west1-b`` zone has four hyperthreads of the Skylake (SKX) generation or later, 30GB of disk space, and a CentOS operating system.
+   The preemptible instance in the ``us-west1-b`` zone has 96 hyperthreads of the Skylake (SKX) generation or later, 30GB of disk space, and a CentOS operating system.
 
    .. code-block:: bash
 
      gcloud compute instances create edge-skx \
            --zone=us-west1-b \
-           --machine-type=n1-highcpu-4 \
+           --machine-type=n1-highcpu-96 \
            --subnet=default \
            --network-tier=PREMIUM \
            --no-restart-on-failure \
