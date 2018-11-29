@@ -225,7 +225,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
 ParallelCluster
 ^^^^^^^^^^
 
-In this section we will use the AWS's (`ParallelCluster <https://aws-parallelcluster.readthedocs.io>`_) to launch a `Slurm <https://slurm.schedmd.com>`_-controlled cluster in AWS.
+In this section we will use the AWS's `ParallelCluster <https://aws-parallelcluster.readthedocs.io>`_ to launch a `Slurm <https://slurm.schedmd.com>`_-controlled cluster in AWS.
 Our final cluster will be ready for MPI-parallel workloads with EDGE.
 Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com/ec2/instance-types/c5/>`_, are best suited as computational backbone for EDGE.
 
