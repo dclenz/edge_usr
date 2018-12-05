@@ -6,8 +6,8 @@ Currently, the tested services are the Amazon Web Services (`AWS <https://aws.am
 Amazon Web Services
 -------------------
 The Amazon Web Services (AWS) have a `section <https://aws.amazon.com/hpc/>`_ for High Performance Computing (HPC).
-As part of this effort, AWS develops the framework `CfnCluster <https://cfncluster.readthedocs.io/en/latest/>`_, which can be used to deploy a custom HPC environment within AWS.
-In this section, we will a) launch a single instance and create a disk image from this instance, and b) combine several compute nodes under the umbrella of CfnCluster for use with EDGE.
+As part of this effort, AWS develops the framework `ParallelCluster <https://aws-parallelcluster.readthedocs.io/en/latest/>`_, which can be used to deploy a custom HPC environment within AWS.
+In this section, we will a) launch a single instance and create a disk image from this instance, and b) combine several compute nodes under the umbrella of ParallelCluster for use with EDGE.
 
 Identity and Access Management (IAM) and SSH
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -114,18 +114,14 @@ If you are planning on using a different zone for your instances, e.g., ``us-eas
 
      aws ec2 authorize-security-group-ingress --region us-west-2 --group-name edge --protocol tcp --port 22 --cidr $(ip route get 1 | awk '{print $NF;exit}')/32
 
-6. For the cluster-setup, `assign <https://cfncluster.readthedocs.io/en/latest/iam.html>`_  the policy ``CfnClusterUserPolicy`` to the users of CfnCluster.
+6. For the cluster-setup, `assign <https://aws-parallelcluster.readthedocs.io/en/latest/iam.html>`_  the policy ``ParallelClusterUserPolicy`` to the users of ParallelCluster.
 
    .. note::
 
-    ``CfnClusterUserPolicy`` uses the template ``<CFNCLUSTER EC2 ROLE NAME>``, which has to be replaced accordingly.
-    We will use ``edge-cluster`` as the name of the cluster, which means that the template has to be replaced by ``cfncluster-edge-cluster-RootRole-*``.
+    ``ParallelClusterUserPolicy`` uses the undocumented template ``<PARALLELCLUSTER EC2 ROLE NAME>``, which has to be replaced accordingly.
+    We will use ``edge-cluster`` as the name of the cluster, which means that the template has to be replaced by ``parallelcluster-edge-cluster-RootRole-*``.
 
-   Further, create an EC2 IAM role and assign the policy ``CfnClusterInstancePolicy`` to the role.
-
-   .. note::
-   
-     CfnCluster 1.5.4 has a bug in the S3-rights of ``CfnClusterInstancePolicy``, which is `fixed <https://github.com/awslabs/cfncluster/pull/555/files>`_.
+   Further, create an EC2 IAM role and assign the policy ``ParallelClusterUserPolicy`` to the role.
 
 Single Instance
 ^^^^^^^^^^^^^^^
@@ -140,19 +136,19 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
 
      aws ec2 describe-images --owners self amazon --region us-west-2 --filters 'Name=name,Values=amzn2-ami-hvm-2.0.????????-x86_64-gp2' 'Name=state,Values=available'
 
-   For later use in a cluster-setting (see Sec. :ref:`sec-cloud-cfn-cluster`), we use a `pre-configured Amazon Linux AMI image <https://github.com/awslabs/cfncluster/blob/master/amis.txt>`_ of the framework.
-   In the next step, this is the CentOS 7 AMI with id ``ami-0053bef6747ca58bf`` in the ``us-west-2`` region, obtained from `CfnCluster <https://github.com/awslabs/cfncluster/blob/v1.6.0/amis.txt>`_.
-   Update the id according to your region and to a possibly more recent version, matching your CfnCluster-version.
+   For later use in a cluster-setting (see Sec. :ref:`sec-cloud-parallel-cluster`), we use a `pre-configured Amazon Linux AMI image <https://github.com/aws/aws-parallelcluster/blob/master/amis.txt>`_ of the framework.
+   In the next step, this is the CentOS 7 AMI with id ``ami-0e6916127d13e1757`` in the ``us-west-2`` region, obtained from `ParallelCluster <https://github.com/aws/aws-parallelcluster/blob/v2.0.2/amis.txt>`_.
+   Update the id according to your region and to a possibly more recent version, matching your ParallelCluster-version.
 
-2. Next, we launch a single spot ``c5.xlarge`` instance, which runs on SKX with 4 hyperthreads, 8GiB of memory and a 30GB of root disk.
+2. Next, we launch a single spot ``c5.18xlarge`` instance, which runs on SKX with 36 cores, 144GiB of memory and a 30GB of root disk.
    Further, our instance uses the public ssh-key and security group ``edge``.
 
   .. code-block:: bash
 
-    aws ec2 run-instances --image-id ami-0053bef6747ca58bf \
+    aws ec2 run-instances --image-id ami-0e6916127d13e1757 \
                           --block-device-mapping '[{ "DeviceName": "/dev/sda1","Ebs": {"VolumeSize": 30,"DeleteOnTermination": true} }]' \
                           --count 1 \
-                          --instance-type c5.xlarge \
+                          --instance-type c5.18xlarge \
                           --region us-west-2 \
                           --instance-market-options 'MarketType=spot' \
                           --security-group-ids edge \
@@ -174,6 +170,9 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
         aws ec2 describe-instances --region $region
       done
 
+  .. note::
+    Certain HPC-specific VM optimizations in the scripts below are triggered by the type of the operating system and the number of hyperthreads.
+
 3. [Optional] `Intel Parallel Studio XE <https://software.intel.com/en-us/parallel-studio-xe>`_ requires us to manually upload the installer for the tools script in the next step.
 
    First, `download <https://software.intel.com/en-us/parallel-studio-xe/choose-download>`_ the standard installer ("Customizable Package").
@@ -191,7 +190,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
      The tool-installation script in the next step searches for the installer.
      If found, it will automatically accept the EULA of Intel Parallel Studio XE in ``silent.cfg`` and proceed with the installation.
 
-4. This steps invokes the two scripts :edge_git:`install_tools.sh <tree/develop/tools/build/install_tools.sh>` and  :edge_git:`install_libs.sh <tree/develop/tools/build/install_libs.sh>` through ssh.
+4. This steps invokes the three scripts :edge_git:`install_tools.sh <tree/develop/tools/build/install_tools.sh>`,  :edge_git:`install_libs.sh <tree/develop/tools/build/install_libs.sh>`, :edge_git:`install_hpc.sh <tree/develop/tools/build/install_hpc.sh>` through ssh.
    The two scripts install required tools and libraries for use with EDGE:
 
    .. code-block:: bash
@@ -210,7 +209,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
 
      aws ec2 create-image --region us-west-2 \
                           --instance-id ${EDGE_AWS_ID} \
-                          --description "AMI for EDGE, based on CfnCluter's CentOS 7 AMI." \
+                          --description "AMI for EDGE, based on ParallelCluster's CentOS 7 AMI." \
                           --name edge-centos-7
 
   The command will generate an image id, e.g., ``ami-0416d8f35899991f2``, which can be inserted into new instances.
@@ -221,28 +220,28 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
 
      aws ec2 terminate-instances --region us-west-2 --instance-ids ${EDGE_AWS_ID}
 
-.. _sec-cloud-cfn-cluster:
+.. _sec-cloud-parallel-cluster:
 
-CfnCluster
+ParallelCluster
 ^^^^^^^^^^
 
-In this section we will use the AWS's cloud formation cluster (`CfnCluster <https://cfncluster.readthedocs.io>`_) to launch a `Slurm <https://slurm.schedmd.com>`_-controlled cluster in AWS. 
+In this section we will use the AWS's `ParallelCluster <https://aws-parallelcluster.readthedocs.io>`_ to launch a `Slurm <https://slurm.schedmd.com>`_-controlled cluster in AWS.
 Our final cluster will be ready for MPI-parallel workloads with EDGE.
 Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com/ec2/instance-types/c5/>`_, are best suited as computational backbone for EDGE.
 
-1. Install CfnCluster through `pip <https://pip.pypa.io/en/stable/>`_:
+1. Install ParallelCluster through `pip <https://pip.pypa.io/en/stable/>`_:
 
    .. code-block:: bash
 
-     pip install cfncluster
+     pip install aws-parallelcluster
 
-2. Create the configuration ``edge-cluster.cfn``.
+2. Create the configuration ``edge-cluster.aws``.
    The following shows an example, which uses 36-core SKX spot instances as compute nodes.
    The arguments ``TEMPLATE_VPC`` and ``TEMPLATE_SUBNET`` have to be replaced according to your AWS settings:
 
    .. code-block:: default
 
-     ## cfncluster config
+     ## parallelcluster config
      [global]
      cluster_template = default
      update_check = true
@@ -254,7 +253,7 @@ Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com
      [aliases]
      ssh = ssh {CFN_USER}@{MASTER_IP} {ARGS}
 
-     ## cfncluster templates
+     ## parallelcluster templates
      [cluster default]
      key_name = edge
      compute_instance_type = c5.18xlarge
@@ -262,7 +261,7 @@ Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com
      # don't spawn any compute instances by default
      initial_queue_size = 0
      # maximum number of instances
-     max_queue_size = 10
+     max_queue_size = 16
      # allow down-scaling of the initial number of instances
      maintain_initial_size = false
      # use Slurm as a scheduler
@@ -295,20 +294,20 @@ Full-node instances as compute nodes, e.g., `c5.18xlarge <https://aws.amazon.com
      # if a node is idle for a minute, it gets released back to the cloud
      scaledown_idletime = 1
 
-3. We launch the CfnCluster ``edge-cluster`` via:
+3. We launch the ParallelCluster ``edge-cluster`` via:
 
    .. code-block:: bash
 
-     cfncluster create --config edge-cluster.cfn edge-cluster
+     pcluster create --config edge-cluster.aws edge-cluster
 
-4. Once created, ``cfncluster`` will return the public ip of the master instance, which is our login node.
+4. Once created, ``pcluster`` will return the public ip of the master instance, which is our login node.
    We use standard key-based ``ssh`` to get into the machine, compile EDGE, and submit jobs through Slurm.
 
-5. After we are done, the following commands deletes our CfnCluster ``edge-cluster``:
+5. After we are done, the following commands deletes our ParallelCluster ``edge-cluster``:
 
    .. code-block:: bash
 
-     cfncluster delete --config edge-cluster.cfn edge-cluster
+     pcluster delete --config edge-cluster.aws edge-cluster
 
 Google Cloud Platform
 ---------------------
@@ -321,13 +320,13 @@ and b) set up a Slurm-operated cluster, combining multiple nodes, ready for use 
 Single Instance
 ^^^^^^^^^^^^^^^
 1. The following command creates the instance ``edge-skx``.
-   The preemtible instance in the ``us-west1-b`` zone has four hyperthreads of the Skylake (SKX) generation or later, 30GB of disk space, and a CentOS operating system.
+   The preemptible instance in the ``us-west1-b`` zone has 96 hyperthreads of the Skylake (SKX) generation or later, 30GB of disk space, and a CentOS operating system.
 
    .. code-block:: bash
 
      gcloud compute instances create edge-skx \
            --zone=us-west1-b \
-           --machine-type=n1-highcpu-4 \
+           --machine-type=n1-highcpu-96 \
            --subnet=default \
            --network-tier=PREMIUM \
            --no-restart-on-failure \
