@@ -13,6 +13,7 @@ the region, if desired.  After the topographical surface is meshed, EDGEcut cons
 matches the boundary of the topography and then refines it in order to create closed, conformal
 mesh. The topography mesh and boundary mesh are then output in `OFF format <https://people.sc.fsu.edu/~jburkardt/data/off/off.html>`_
 as *separate* files.
+The tool `meshio <https://github.com/nschloe/meshio>`_ can be used for mesh-format conversions.
 
 .. image:: EDGEcut_example.svg
 
@@ -86,7 +87,7 @@ Then, configure CGAL with CMake:
 
 You may want to configure with some non-default options if, for instance, you do not have ``sudo`` access on your machine or
 wish to use libraries in non-standard locations. Instructions on how to customize your configuration are given below; an example
-configuration for someone who maintains software in ${HOME}/local might be:
+configuration for someone who maintains software in ``${HOME}/local`` might be:
 
 .. code-block:: bash
 
