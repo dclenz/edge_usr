@@ -223,7 +223,7 @@ If you are planning on switching to a `different region <https://docs.aws.amazon
 .. _sec-cloud-parallel-cluster:
 
 ParallelCluster
-^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 In this section we will use the AWS's `ParallelCluster <https://aws-parallelcluster.readthedocs.io>`_ to launch a `Slurm <https://slurm.schedmd.com>`_-controlled cluster in AWS.
 Our final cluster will be ready for MPI-parallel workloads with EDGE.
@@ -453,6 +453,11 @@ Further information is available from Google's `Codelabs <https://codelabs.devel
    Logs of the scripts are written to ``/var/log/messages``.
    Since we provide a pre-configured image to the login and compute instances, the Slurm installation on the controller instance is the most time-consuming part.
    When finished, as indicated by a broadcast to the instances, open a new session on the login node for proper initialization of your environment.
+
+   .. note::
+
+     If you have trouble, connecting through ``gcloud compute ssh``, try `disabling <https://cloud.google.com/compute/docs/instances/managing-instance-access>`_ the "OS Login"-feature of the Google extensions on the instance and adding your public key manually.
+     A disabled OS Login is mandatory for this, as decribed `here <https://stackoverflow.com/a/50185005>`_.
 
    .. note::
 
