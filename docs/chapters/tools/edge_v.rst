@@ -41,12 +41,11 @@ Please refer to the `UCVMC documentation <https://github.com/SCECcode/UCVMC/wiki
 
 MOAB
 ^^^^
-Details on the MOAB isntallation are given in Sec. :doc:`../install/edge`.
+Details on the MOAB installation are given in Sec. :doc:`../install/edge`.
 
 EDGE-V
 ^^^^^^
 Analogue to EDGE, EDGE-V uses SCons for the installation.
-Finally, to build EDGE-V tool, please run the following command:
 With a MOAB installation in ``../../libs`` and UCVM installation in ``../../libs/ucvm-17.1.0/``, the build commands reads as:
 
 .. code-block:: bash
