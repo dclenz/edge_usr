@@ -1,5 +1,5 @@
 EDGEcut
-=========
+=======
 EDGEcut is a tool for generating surface meshes for a computational domain with topography. It makes
 heavy use of the `Computational Geometry Algorithms Library <https://www.cgal.org/>`_ (CGAL), particularly the
 `3D Mesh Generation <https://doc.cgal.org/latest/Mesh_3/index.html#Chapter_3D_Mesh_Generation/>`_,
@@ -18,7 +18,7 @@ The tool `meshio <https://github.com/nschloe/meshio>`_ can be used for mesh-form
 .. image:: EDGEcut_example.svg
 
 Dependencies
----------------
+------------
 EDGEcut has the following dependencies:
 
 * `GCC <https://www.gnu.org/software/gcc/>`_ version 5 or higher
@@ -34,9 +34,9 @@ EDGEcut has the following dependencies:
 
 
 Build Instructions
---------------------
+------------------
 SCons
-^^^^^^^
+^^^^^
 `SCons <https://scons.org/>`_ is a python-based build tool and can be installed with ``pip``:
 
 .. code-block:: bash
@@ -45,13 +45,13 @@ SCons
 
 
 Boost
-^^^^^^^
+^^^^^
 EDGEcut requires the ``Boost.Thread`` and ``Boost.System`` libraries to be installed (these libraries are not header-only).
 Since Boost is a CGAL dependency, these libraries must be installed before attempting to install CGAL.
 For more information on how to install Boost libraries, please see the `Boost Getting Started Guide <https://www.boost.org/doc/libs/1_68_0/more/getting_started/index.html>`_.
 
 Eigen
-^^^^^^^^
+^^^^^
 The Eigen library is a header-only linear algebra library used by CGAL to perform
 Lloyd smoothing during mesh optimization. Eigen is included as a submodule of EDGE
 and should be found automatically by the CGAL installer. Therefore, there should be
@@ -61,7 +61,7 @@ If you find that the Eigen submodule is not being used by CGAL, you can pass the
 ``-DEIGEN3_INCLUDE_DIR`` to cmake during the CGAL configuration step (see section below).
 
 CGAL
-^^^^^^
+^^^^
 EDGEcut has been tested with CGAL version 4.13. CGAL releases are designed for backwards-compatibility,
 but there is always a risk that future versions may introduce unforeseen changes in behavior.
 
@@ -158,7 +158,7 @@ After configuration, you can complete the build process by running
   environment variable.
 
 EDGEcut
-^^^^^^^^^^
+^^^^^^^
 To build EDGEcut, simply invoke scons with no additional arguments:
 
 .. code-block:: bash
@@ -190,14 +190,16 @@ into the ``lib64`` subdirectory of the installation root, as this may be unexpec
 See `this warning <cgal-linkpath-warn_>`__ for more information.
 
 Usage
----------
+-----
 EDGEcut requires a single command-line argument, which is an XML configuration file.
 
 .. code-block:: bash
 
   ./edge_cut example.xml
 
-The structure of the XML tree expected by EDGEcut looks like the following:
+The structure of the XML tree expected by EDGEcut is given below. The entire
+``<region>`` and ``<optimize>`` nodes may be omitted if desired. Please see the
+corresponding sections below for their default behavior.
 
 .. code-block:: bash
 
@@ -226,14 +228,26 @@ The structure of the XML tree expected by EDGEcut looks like the following:
       <angle/>
     </refine>
     <region>
-      <inner_radius/>
-      <outer_radius/>
-      <center>
-        <x/>
-        <y/>
-        <z/>
-      </center>
-      <scale/>
+      <circular>
+        <inner_radius/>
+        <outer_radius/>
+        <center>
+          <x/>
+          <y/>
+          <z/>
+        </center>
+        <scale/>
+      </circular>
+      <layered>
+        <layer>
+          <depth/>
+          <scale/>
+        </layer>
+        <layer>
+          <depth/>
+          <scale/>
+        </layer>
+      </layered>
     </region>
     <optimize>
       <lloyd/>
@@ -247,24 +261,24 @@ The structure of the XML tree expected by EDGEcut looks like the following:
 A description of each parameter is given in the following sections.
 
 <io>
-^^^^^^
+^^^^
 The <io> node describes the files used by EDGEcut for input and output.
 
 +--------------------+------------------------------------------------------------------------------+
 | Attribute          | Description                                                                  |
 +====================+==============================================================================+
-|| topography:in     || File name of input file containing a representation of the topography to    |
+|| topography/in     || File name of input file containing a representation of the topography to    |
 |                    || be meshed. See :ref:`topo-description` for more information.                |
 +--------------------+------------------------------------------------------------------------------+
-|| topography:out    || File name of the output OFF file which will contain the topography          |
+|| topography/out    || File name of the output OFF file which will contain the topography          |
 |                    || surface mesh                                                                |
 +--------------------+------------------------------------------------------------------------------+
-|| boundary:out      || File name of the output OFF file which will contain the boundary            |
+|| boundary/out      || File name of the output OFF file which will contain the boundary            |
 |                    || surface mesh                                                                |
 +--------------------+------------------------------------------------------------------------------+
 
 <bounding_box>
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 The <bounding_box> node describes the geometric region in which surface meshing takes place.
 The final surface mesh generated by EDGEcut will be bounded by the five planes
 
@@ -288,7 +302,7 @@ and enclosed on the top by the topographical surface.
 +--------------------+------------------------------------------------------------------------------+
 
 <refine>
-^^^^^^^^^^^^
+^^^^^^^^
 The <refine> node describes the mesh refinement criteria that drives the CGAL meshing algorithm.
 
 +--------------------+------------------------------------------------------------------------------+
@@ -317,9 +331,17 @@ The <refine> node describes the mesh refinement criteria that drives the CGAL me
 +--------------------+------------------------------------------------------------------------------+
 
 <region>
-^^^^^^^^^^^
-The <region> node describes how the target mesh criteria vary throughout the topographical surface
-mesh (the refinement criteria is constant on the boundary mesh).
+^^^^^^^^
+The <region> node describes how the target mesh criteria vary throughout the surface
+mesh. There are two modes of by which refinement can vary: circular-region-based and depth-based;
+this behavior is controlled by the <region/circular> and <region/layered> XML nodes,
+respectively. These refinement features may be used together, separately, or not at all.
+To disable a certain type of refinement (i.e. refine uniformly), simply omit the corresponding
+node from the runtime config.
+
+| **<circular>**
+| Circular-region-based refinement is applied *only to the topographical surface mesh*. In this mode,
+  the size of a triangle element depends on the xy-distance from a user-specified point.
 
 .. figure:: EDGEcut_refine.png
   :align: center
@@ -328,14 +350,14 @@ mesh (the refinement criteria is constant on the boundary mesh).
 
 The criteria described by <refine> is enforced in a circular region centered at ``center`` with
 a radius of ``inner_radius``. The z-coordinate of a point (altitude) is not factored in when
-computing the distance to ``center``. The <region> node describes how the refinement criteria
+computing the distance to ``center``. The <circular> node describes how the refinement criteria
 differs outside of this region.
 
 +--------------------+------------------------------------------------------------------------------+
 | Attribute          | Description                                                                  |
 +====================+==============================================================================+
-|| inner_radius      || Radius of circular region in which topography has the minimum refinement    |
-|                    || level (specified by ``facet`` and ``approx``).                              |
+|| inner_radius      || Radius of circular region inside which topography has the minimum           |
+|                    || refinement level (specified by ``facet`` and ``approx``).                   |
 +--------------------+------------------------------------------------------------------------------+
 || outer_radius      || Radius outside of which the topography refinement is inflated by a factor   |
 |                    || of ``scale``. The refinement level of facets between ``inner_radius`` and   |
@@ -348,24 +370,60 @@ differs outside of this region.
 |                    || For uniform refinement everywhere, set ``scale=1``.                         |
 +--------------------+------------------------------------------------------------------------------+
 
+
+| **<layered>**
+| Depth-based refinement is applied to both the topographical and boundary surface meshes. In this mode,
+  the size of triangle elements depends on their z-coordinate. The user specifies a set of depths and scale factors,
+  and element size is scaled based on which depth-layers the element lies between.
+|
+| Points above the first depth layer will be scaled according to the first specified scale factor;
+  points between depth layers 1 and 2 will be scaled according to the second specified scale factor;
+  and so on. Points below the final depth layer will be scaled according to the lowest specified scale
+  factor.
+
+|     scale1
+| ----------------------  depth1
+|     scale2
+| ----------------------  depth2
+|     scale3
+|       \*
+|       \*
+|       \*
+|     scaleN
+| ----------------------  depthN
+|     scaleN
+
++--------------------+------------------------------------------------------------------------------+
+| Attribute          | Description                                                                  |
++====================+==============================================================================+
+|| layer/depth       || z-coordinate defining a depth layer                                         |
++--------------------+------------------------------------------------------------------------------+
+|| layer/scale       || scale factor associated to a given layer                                    |
++--------------------+------------------------------------------------------------------------------+
+
+.. NOTE::
+  To define multiple layers, simply specify multiple <layer> nodes within the parent <layered> node.
+  <layer> nodes can be listed in any order within the parent <layered> node (i.e. they need
+  not be sorted in any way).
+
 <optimize>
-^^^^^^^^^^^
+^^^^^^^^^^
 The <optimize> node is used to turn different mesh optimizers on and off. The possible
 mesh optimization steps are described in the `CGAL manual <https://doc.cgal.org/latest/Mesh_3/index.html#Mesh_3OptimizationPhase>`_.
 
 +--------------------+------------------------------------------------------------------------------+
 | Attribute          | Description                                                                  |
 +====================+==============================================================================+
-|| lloyd             || Turns the Lloyd smoothing global optimizer on or off. Defaults to "on".     |
+|| lloyd             || Turns the Lloyd smoothing global optimizer on or off. Defaults to "yes".    |
 |                    || **Accepted inputs: "yes", "no"**                                            |
 +--------------------+------------------------------------------------------------------------------+
-|| odt               || Turns the ODT smoothing global optimizer on or off. Defaults to "on".       |
+|| odt               || Turns the ODT smoothing global optimizer on or off. Defaults to "yes".      |
 |                    || **Accepted inputs: "yes", "no"**                                            |
 +--------------------+------------------------------------------------------------------------------+
-|| perturb           || Turns the sliver perturber local optimizer on or off. Defaults to "on".     |
+|| perturb           || Turns the sliver perturber local optimizer on or off. Defaults to "yes".    |
 |                    || **Accepted inputs: "yes", "no"**                                            |
 +--------------------+------------------------------------------------------------------------------+
-|| exude             || Turns the sliver exuder local optimizer on or off. Defaults to "on".        |
+|| exude             || Turns the sliver exuder local optimizer on or off. Defaults to "yes".       |
 |                    || **Accepted inputs: "yes", "no"**                                            |
 +--------------------+------------------------------------------------------------------------------+
 || time_limit        || Sets a time limit for each of the optimization steps above. If set to 0,    |
@@ -376,7 +434,7 @@ mesh optimization steps are described in the `CGAL manual <https://doc.cgal.org/
 .. _topo-description:
 
 Topographical Input
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 In order to create a surface mesh approximating a topographical profile, EDGEcut requires that the XML
 configuration contain a file path to a representation of the topography (the ``topography:in`` node).
 
