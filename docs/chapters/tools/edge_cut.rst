@@ -340,8 +340,8 @@ To disable a certain type of refinement (i.e. refine uniformly), simply omit the
 node from the runtime config.
 
 | **<circular>**
-| Circular-region-based refinement is applied *only to the topographical surface mesh*. In this mode,
-  the size of a triangle element depends on the xy-distance from a user-specified point.
+| In circular refinement mode, the size of a triangle element depends on the xy-distance from
+  a user-specified point.
 
 .. figure:: EDGEcut_refine.png
   :align: center
@@ -369,6 +369,13 @@ differs outside of this region.
 |                    || refinement region to the outer edges of the computational domain.           |
 |                    || For uniform refinement everywhere, set ``scale=1``.                         |
 +--------------------+------------------------------------------------------------------------------+
+
+.. NOTE::
+  The attributes of the <circular> node also affect the boundary mesh, but in a different way than the
+  topography mesh.  The boundary mesh is always uniformly refined with a facet size inflated by ``scale``.
+  This is the same size as the parts of the topography mesh outside of ``outer_radius``.
+  Therefore, **it is recommended that the circle with size ``outer_radius`` be completely enclosed by the
+  bounding region**.
 
 
 | **<layered>**
